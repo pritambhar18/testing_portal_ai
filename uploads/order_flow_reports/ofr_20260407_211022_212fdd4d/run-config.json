@@ -1,0 +1,10 @@
+{
+    "reportId": "ofr_20260407_211022_212fdd4d",
+    "offerName": "test",
+    "baseUrl": "https://blowoutcartcollective.com/dewalt20vcordless6loolkit/?affid=1&click_id=test&state=CA",
+    "browser": "msedge",
+    "csvPath": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_reports\\ofr_20260407_211022_212fdd4d\\input\\orders.csv",
+    "reportDir": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_reports\\ofr_20260407_211022_212fdd4d",
+    "locatorsPath": "C:\\xampp\\htdocs\\testing_portal\\order_placement\\locators.json",
+    "requestedBy": "admin@test.com"
+}

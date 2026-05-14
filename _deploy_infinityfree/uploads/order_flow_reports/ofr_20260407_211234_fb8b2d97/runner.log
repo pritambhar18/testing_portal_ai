@@ -1,0 +1,21 @@
+[2026-04-07T19:12:40.919Z] Runner started for https://blowoutcartcollective.com/nikemind/?affid=1&state=CA&click_id=test123
+[2026-04-07T19:12:48.469Z] Row 1: browser opened in private session for pritam.bhar+000020000@codeclouds.com.
+[2026-04-07T19:13:27.005Z] Row 1: failed with error=locator.scrollIntoViewIfNeeded: Timeout 29978.172ms exceeded.
+Call log:
+[2m  - attempting scroll into view action[22m
+[2m    2 × waiting for element to be stable[22m
+[2m      - element is not stable[22m
+[2m    - retrying scroll into view action[22m
+[2m    - waiting 20ms[22m
+[2m    2 × waiting for element to be stable[22m
+[2m      - element is not stable[22m
+[2m    - retrying scroll into view action[22m
+[2m      - waiting 100ms[22m
+[2m    52 × waiting for element to be stable[22m
+[2m       - element is not stable[22m
+[2m     - retrying scroll into view action[22m
+[2m       - waiting 500ms[22m
+[2m    - waiting for element to be stable[22m
+.
+[2026-04-07T19:13:33.464Z] Row 1: browser session closed.
+[2026-04-07T21:22:26+02:00] PHP action: report registered in index.json for ofr_20260407_211234_fb8b2d97

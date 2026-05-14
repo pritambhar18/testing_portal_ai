@@ -1,0 +1,10 @@
+{
+    "reportId": "ofr_20260324_140529_bce13987",
+    "offerName": "test",
+    "baseUrl": "https://blowoutcartdirect.com/monsterenergybox/?affid=1&click_id=243hjj&click_id=test@123456&state=CAhttps://blowoutcartdirect.com/monsterenergybox/?affid=1&click_id=243hjj&click_id=test@123456&state=CA",
+    "browser": "chrome",
+    "csvPath": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_reports\\ofr_20260324_140529_bce13987\\input\\orders.csv",
+    "reportDir": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_reports\\ofr_20260324_140529_bce13987",
+    "locatorsPath": "C:\\xampp\\htdocs\\testing_portal\\order_placement\\locators.json",
+    "requestedBy": "admin@test.com"
+}

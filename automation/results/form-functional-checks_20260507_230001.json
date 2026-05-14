@@ -1,0 +1,79 @@
+[
+  {
+    "label": "Checkout Page - Form discovery",
+    "status": "PASS",
+    "detail": "forms=1",
+    "time": "2026-05-07T21:00:11.027Z",
+    "screenshot_path": "C:\\xampp\\htdocs\\testing_portal\\automation\\results\\screenshots\\1778187610598_Checkout_Page_form_discovery.png"
+  },
+  {
+    "label": "Checkout Page - Form 1 field discovery",
+    "status": "PASS",
+    "detail": "fields=4",
+    "time": "2026-05-07T21:00:12.194Z",
+    "screenshot_path": "C:\\xampp\\htdocs\\testing_portal\\automation\\results\\screenshots\\1778187611847_Checkout_Page_form_1_fields.png"
+  },
+  {
+    "label": "Form 1 - Card number blank validation after submit for creditCardNumber",
+    "status": "PASS",
+    "detail": "blank value blocked, message=\"Please fill out this field.\"",
+    "time": "2026-05-07T21:00:13.031Z",
+    "screenshot_path": "C:\\xampp\\htdocs\\testing_portal\\automation\\results\\screenshots\\1778187612705_form_1_blank_creditCardNumber.png"
+  },
+  {
+    "label": "Form 1 - Blank validation for expmonth",
+    "status": "FAIL",
+    "detail": "blank value has no visible/native validation",
+    "time": "2026-05-07T21:00:13.385Z",
+    "screenshot_path": "C:\\xampp\\htdocs\\testing_portal\\automation\\results\\screenshots\\1778187613056_form_1_blank_expmonth.png"
+  },
+  {
+    "label": "Form 1 - Blank validation for expyear",
+    "status": "FAIL",
+    "detail": "blank value has no visible/native validation",
+    "time": "2026-05-07T21:00:13.734Z",
+    "screenshot_path": "C:\\xampp\\htdocs\\testing_portal\\automation\\results\\screenshots\\1778187613414_form_1_blank_expyear.png"
+  },
+  {
+    "label": "Form 1 - CVV blank validation after submit for CVV",
+    "status": "FAIL",
+    "detail": "blank value has no visible/native validation",
+    "time": "2026-05-07T21:00:14.133Z",
+    "screenshot_path": "C:\\xampp\\htdocs\\testing_portal\\automation\\results\\screenshots\\1778187613763_form_1_blank_CVV.png"
+  },
+  {
+    "label": "Form 1 - Card number placeholder identifies card field for creditCardNumber",
+    "status": "PASS",
+    "detail": "placeholder=\"Credit Card Number\"",
+    "time": "2026-05-07T21:00:14.495Z",
+    "screenshot_path": "C:\\xampp\\htdocs\\testing_portal\\automation\\results\\screenshots\\1778187614144_form_1_card_placeholder_creditCardNumber.png"
+  },
+  {
+    "label": "Form 1 - Card number accepts 16 digits for creditCardNumber",
+    "status": "PASS",
+    "detail": "value=\"4111111111111111\", digits=16",
+    "time": "2026-05-07T21:00:14.881Z",
+    "screenshot_path": "C:\\xampp\\htdocs\\testing_portal\\automation\\results\\screenshots\\1778187614547_form_1_card_16_digits_creditCardNumber.png"
+  },
+  {
+    "label": "Form 1 - Card number max 16 digits for creditCardNumber",
+    "status": "PASS",
+    "detail": "value=\"4111111111111111\", digits=16",
+    "time": "2026-05-07T21:00:15.325Z",
+    "screenshot_path": "C:\\xampp\\htdocs\\testing_portal\\automation\\results\\screenshots\\1778187614977_form_1_card_17_digits_creditCardNumber.png"
+  },
+  {
+    "label": "Form 1 - Card number rejects characters for creditCardNumber",
+    "status": "PASS",
+    "detail": "value=\"\"",
+    "time": "2026-05-07T21:00:15.706Z",
+    "screenshot_path": "C:\\xampp\\htdocs\\testing_portal\\automation\\results\\screenshots\\1778187615376_form_1_card_character_creditCardNumber.png"
+  },
+  {
+    "label": "Form 1 - CVV rejects characters for CVV",
+    "status": "FAIL",
+    "detail": "value=\"abc\"",
+    "time": "2026-05-07T21:00:16.092Z",
+    "screenshot_path": "C:\\xampp\\htdocs\\testing_portal\\automation\\results\\screenshots\\1778187615763_form_1_cvv_character_CVV.png"
+  }
+]

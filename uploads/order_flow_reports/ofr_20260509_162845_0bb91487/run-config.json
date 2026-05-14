@@ -1,0 +1,13 @@
+{
+    "reportId": "ofr_20260509_162845_0bb91487",
+    "offerName": "https://bestvaultbargaindash.com/cocacolaworldcup2026bundle/?affid=1&state=CA",
+    "baseUrl": "https://vaultnextmartelite.com/dewalt20vmaxcombokit?affid=1&state=CA",
+    "browser": "msedge",
+    "headless": true,
+    "csvPath": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_reports\\ofr_20260509_162845_0bb91487\\input\\orders.csv",
+    "reportDir": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_reports\\ofr_20260509_162845_0bb91487",
+    "locatorsPath": "C:\\xampp\\htdocs\\testing_portal\\order_placement\\locators.json",
+    "requestedBy": "admin@example.com",
+    "clientRunId": "ofr_1778336925004_be6d24540bc2c",
+    "stopSignalPath": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_stops\\ofr_1778336925004_be6d24540bc2c.stop"
+}

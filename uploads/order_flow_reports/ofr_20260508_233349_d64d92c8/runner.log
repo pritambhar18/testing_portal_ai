@@ -1,0 +1,5 @@
+[2026-05-08T21:33:52.479Z] Runner started for https://blowoutcartcollective.com/nikemind/?affid=1&state=CA&click_id=test123
+[2026-05-08T21:33:54.344Z] Row 1: browser opened in private session for pritam.bhar+000020000@codeclouds.com.
+[2026-05-08T21:36:57.736Z] Row 1: completed with status=FAILED, orderId=-, cardLast4=4442.
+[2026-05-08T21:36:59.741Z] Row 1: browser session closed.
+[2026-05-08T23:38:52+02:00] PHP action: report registered in index.json for ofr_20260508_233349_d64d92c8

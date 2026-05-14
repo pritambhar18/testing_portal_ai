@@ -1,0 +1,10 @@
+{
+    "reportId": "ofr_20260321_195357_b8478b06",
+    "offerName": "test002",
+    "baseUrl": "https://blowoutcartdirect.com/dysonvacuum/?affid=1&click_id=test123&state=CA",
+    "browser": "chrome",
+    "csvPath": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_reports\\ofr_20260321_195357_b8478b06\\input\\orders.csv",
+    "reportDir": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_reports\\ofr_20260321_195357_b8478b06",
+    "locatorsPath": "C:\\xampp\\htdocs\\testing_portal\\order_placement\\locators.json",
+    "requestedBy": "admin@test.com"
+}

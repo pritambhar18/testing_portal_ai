@@ -1,0 +1,65 @@
+[
+  {
+    "label": "Checkout Page - Form discovery",
+    "status": "PASS",
+    "detail": "forms=1",
+    "time": "2026-05-07T20:48:50.120Z",
+    "screenshot_path": "C:\\xampp\\htdocs\\testing_portal\\automation\\results\\screenshots\\1778186929532_Checkout_Page_form_discovery.png"
+  },
+  {
+    "label": "Checkout Page - Form 1 field discovery",
+    "status": "PASS",
+    "detail": "fields=4",
+    "time": "2026-05-07T20:48:50.751Z",
+    "screenshot_path": "C:\\xampp\\htdocs\\testing_portal\\automation\\results\\screenshots\\1778186930387_Checkout_Page_form_1_fields.png"
+  },
+  {
+    "label": "Form 1 - Blank validation for creditCardNumber",
+    "status": "PASS",
+    "detail": "blank value blocked, message=\"Please fill out this field.\"",
+    "time": "2026-05-07T20:48:51.606Z",
+    "screenshot_path": "C:\\xampp\\htdocs\\testing_portal\\automation\\results\\screenshots\\1778186931260_form_1_blank_creditCardNumber.png"
+  },
+  {
+    "label": "Form 1 - Blank validation for expmonth",
+    "status": "FAIL",
+    "detail": "blank value has no visible/native validation",
+    "time": "2026-05-07T20:48:51.979Z",
+    "screenshot_path": "C:\\xampp\\htdocs\\testing_portal\\automation\\results\\screenshots\\1778186931638_form_1_blank_expmonth.png"
+  },
+  {
+    "label": "Form 1 - Blank validation for expyear",
+    "status": "FAIL",
+    "detail": "blank value has no visible/native validation",
+    "time": "2026-05-07T20:48:52.359Z",
+    "screenshot_path": "C:\\xampp\\htdocs\\testing_portal\\automation\\results\\screenshots\\1778186932010_form_1_blank_expyear.png"
+  },
+  {
+    "label": "Form 1 - CVV blank validation after submit for CVV",
+    "status": "FAIL",
+    "detail": "blank value has no visible/native validation",
+    "time": "2026-05-07T20:48:52.710Z",
+    "screenshot_path": "C:\\xampp\\htdocs\\testing_portal\\automation\\results\\screenshots\\1778186932386_form_1_blank_CVV.png"
+  },
+  {
+    "label": "Form 1 - Phone rejects characters for creditCardNumber",
+    "status": "PASS",
+    "detail": "value=\"\"",
+    "time": "2026-05-07T20:48:53.189Z",
+    "screenshot_path": "C:\\xampp\\htdocs\\testing_portal\\automation\\results\\screenshots\\1778186932797_form_1_phone_character_creditCardNumber.png"
+  },
+  {
+    "label": "Form 1 - Phone max 10 digits for creditCardNumber",
+    "status": "FAIL",
+    "detail": "value=\"12345678901\", digits=11",
+    "time": "2026-05-07T20:48:53.567Z",
+    "screenshot_path": "C:\\xampp\\htdocs\\testing_portal\\automation\\results\\screenshots\\1778186933238_form_1_phone_length_creditCardNumber.png"
+  },
+  {
+    "label": "Form 1 - CVV rejects characters for CVV",
+    "status": "FAIL",
+    "detail": "value=\"abc\"",
+    "time": "2026-05-07T20:48:54.002Z",
+    "screenshot_path": "C:\\xampp\\htdocs\\testing_portal\\automation\\results\\screenshots\\1778186933642_form_1_cvv_character_CVV.png"
+  }
+]

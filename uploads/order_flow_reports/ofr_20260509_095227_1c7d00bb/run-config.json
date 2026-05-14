@@ -1,0 +1,13 @@
+{
+    "reportId": "ofr_20260509_095227_1c7d00bb",
+    "offerName": "https://www.bestvaultbargaindash.com/ninjawoodfireoutdoorgrill/?affid=1&state=CA",
+    "baseUrl": "https://www.bestvaultbargaindash.com/ninjawoodfireoutdoorgrill/?affid=1&state=CA",
+    "browser": "msedge",
+    "headless": true,
+    "csvPath": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_reports\\ofr_20260509_095227_1c7d00bb\\input\\orders.csv",
+    "reportDir": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_reports\\ofr_20260509_095227_1c7d00bb",
+    "locatorsPath": "C:\\xampp\\htdocs\\testing_portal\\order_placement\\locators.json",
+    "requestedBy": "admin@example.com",
+    "clientRunId": "ofr_1778313147807_6be37a2adc7988",
+    "stopSignalPath": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_stops\\ofr_1778313147807_6be37a2adc7988.stop"
+}

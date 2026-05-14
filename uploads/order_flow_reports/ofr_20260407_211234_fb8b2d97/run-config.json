@@ -1,0 +1,10 @@
+{
+    "reportId": "ofr_20260407_211234_fb8b2d97",
+    "offerName": "test",
+    "baseUrl": "https://blowoutcartcollective.com/nikemind/?affid=1&state=CA&click_id=test123",
+    "browser": "msedge",
+    "csvPath": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_reports\\ofr_20260407_211234_fb8b2d97\\input\\orders.csv",
+    "reportDir": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_reports\\ofr_20260407_211234_fb8b2d97",
+    "locatorsPath": "C:\\xampp\\htdocs\\testing_portal\\order_placement\\locators.json",
+    "requestedBy": "admin@test.com"
+}

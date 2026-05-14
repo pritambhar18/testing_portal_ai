@@ -1,0 +1,10 @@
+{
+    "reportId": "ofr_20260324_144337_3f2106b0",
+    "offerName": "tet001",
+    "baseUrl": "https://blowoutcartdirect.com/monsterenergybox/?affid=1&click_id=243hjj&click_id=test@123456&state=CA",
+    "browser": "chrome",
+    "csvPath": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_reports\\ofr_20260324_144337_3f2106b0\\input\\orders.csv",
+    "reportDir": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_reports\\ofr_20260324_144337_3f2106b0",
+    "locatorsPath": "C:\\xampp\\htdocs\\testing_portal\\order_placement\\locators.json",
+    "requestedBy": "admin@test.com"
+}

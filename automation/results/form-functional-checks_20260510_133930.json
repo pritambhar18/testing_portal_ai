@@ -1,0 +1,23 @@
+[
+  {
+    "label": "Index Page - Form discovery",
+    "status": "PASS",
+    "detail": "forms=1",
+    "time": "2026-05-10T11:39:40.750Z",
+    "screenshot_path": "C:\\xampp\\htdocs\\testing_portal\\automation\\results\\screenshots\\1778413176891_Index_Page_form_discovery.png"
+  },
+  {
+    "label": "Index Page - Form 1 field discovery",
+    "status": "PASS",
+    "detail": "fields=1",
+    "time": "2026-05-10T11:39:43.542Z",
+    "screenshot_path": "C:\\xampp\\htdocs\\testing_portal\\automation\\results\\screenshots\\1778413180910_Index_Page_form_1_fields.png"
+  },
+  {
+    "label": "Form 1 - Blank validation for q",
+    "status": "FAIL",
+    "detail": "blank value has no visible/native validation",
+    "time": "2026-05-10T11:39:45.986Z",
+    "screenshot_path": "C:\\xampp\\htdocs\\testing_portal\\automation\\results\\screenshots\\1778413184075_form_1_blank_q.png"
+  }
+]

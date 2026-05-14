@@ -1,0 +1,5 @@
+[2026-03-24T13:40:36.469Z] Runner started for https://blowoutcartdirect.com/monsterenergybox/?affid=1&click_id=243hjj&click_id=test@123456&state=CA
+[2026-03-24T13:40:38.399Z] Row 1: browser opened in private session for pritam.bhar+000020000@codeclouds.com.
+[2026-03-24T13:42:28.767Z] Row 1: completed with status=PLACED, orderId=6169518, cardLast4=4442.
+[2026-03-24T13:42:29.343Z] Row 1: browser session closed.
+[2026-03-24T14:42:41+01:00] PHP action: report registered in index.json for ofr_20260324_144030_cbd75024

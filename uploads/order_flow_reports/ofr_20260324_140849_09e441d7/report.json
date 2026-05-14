@@ -1,0 +1,117 @@
+{
+  "id": "ofr_20260324_140849_09e441d7",
+  "offer_name": "test001",
+  "url": "https://blowoutcartdirect.com/dysonvacuum/?affid=1&click_id=test123&state=CA",
+  "browser": "chrome",
+  "created_at": "2026-03-24 18:39:04",
+  "total_rows": 2,
+  "placed_orders": 0,
+  "failed_orders": 2,
+  "report_dir": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_reports\\ofr_20260324_140849_09e441d7",
+  "report_format": "pdf",
+  "report_error": "",
+  "securityPerformance": [
+    {
+      "label": "On page load, the URL should force to HTTPS if opened with HTTP URL",
+      "status": "FAIL",
+      "details": "Final URL: http://blowoutcartdirect.com/dysonvacuum/?affid=1&click_id=test123&state=CA",
+      "source": ""
+    },
+    {
+      "label": "Start to finish redirect checking (Do things go where they should go)",
+      "status": "FAIL",
+      "details": "403 http://blowoutcartdirect.com/dysonvacuum/?affid=1&click_id=test123&state=CA",
+      "source": "<a href=\"http://wheregoes.com/\" target=\"_blank\" rel=\"noopener\">wheregoes.com</a> | <a href=\"http://redirectdetective.com/\" target=\"_blank\" rel=\"noopener\">redirectdetective.com</a>"
+    },
+    {
+      "label": "HTTP2 Status",
+      "status": "FAIL",
+      "details": "HTTP/2 was not negotiated.",
+      "source": ""
+    },
+    {
+      "label": "HTML Optimisation Report",
+      "status": "MANUAL",
+      "details": "Open validator for markup review.",
+      "source": "<a href=\"https://validator.w3.org/nu/?doc=https%3A%2F%2Fblowoutcartdirect.com%2Fdysonvacuum%2F%3Faffid%3D1%26click_id%3Dtest123%26state%3DCA\" target=\"_blank\" rel=\"noopener\">validator.w3.org/nu</a>"
+    },
+    {
+      "label": "Domain Test URL",
+      "status": "MANUAL",
+      "details": "blowoutcartdirect.com",
+      "source": "<a href=\"https://www.whatsmydns.net/#A/blowoutcartdirect.com\" target=\"_blank\" rel=\"noopener\">whatsmydns.net</a>"
+    },
+    {
+      "label": "Safe Browsing Site Status",
+      "status": "MANUAL",
+      "details": "Manual review required.",
+      "source": "<a href=\"https://transparencyreport.google.com/safe-browsing/search?url=https%3A%2F%2Fblowoutcartdirect.com%2Fdysonvacuum%2F%3Faffid%3D1%26click_id%3Dtest123%26state%3DCA\" target=\"_blank\" rel=\"noopener\">Google Transparency Report</a>"
+    },
+    {
+      "label": "Robots.txt check",
+      "status": "FAIL",
+      "details": "fetch failed",
+      "source": "<a href=\"https://blowoutcartdirect.com/robots.txt\" target=\"_blank\" rel=\"noopener\">robots.txt</a>"
+    },
+    {
+      "label": "Domain Expiry check. (At least 3 months)",
+      "status": "PASS",
+      "details": "Expiry: 2027-02-27 (339 days remaining)",
+      "source": "<a href=\"https://www.digicert.com/help/\" target=\"_blank\" rel=\"noopener\">digicert.com/help</a>"
+    },
+    {
+      "label": "SSL Grade",
+      "status": "MANUAL",
+      "details": "Run external SSL Labs scan.",
+      "source": "<a href=\"https://www.ssllabs.com/ssltest/analyze.html?d=blowoutcartdirect.com\" target=\"_blank\" rel=\"noopener\">ssllabs.com</a>"
+    },
+    {
+      "label": "GTMetrix (Desktop and Mobile)",
+      "status": "MANUAL",
+      "details": "Run external performance tests for desktop and mobile.",
+      "source": "<a href=\"https://gtmetrix.com/\" target=\"_blank\" rel=\"noopener\">gtmetrix.com</a>"
+    },
+    {
+      "label": "Google PageSpeed (Desktop and Mobile)",
+      "status": "MANUAL",
+      "details": "Run external performance tests for desktop and mobile.",
+      "source": "<a href=\"https://pagespeed.web.dev/report?url=https%3A%2F%2Fblowoutcartdirect.com%2Fdysonvacuum%2F%3Faffid%3D1%26click_id%3Dtest123%26state%3DCA\" target=\"_blank\" rel=\"noopener\">pagespeed.web.dev</a>"
+    },
+    {
+      "label": "WebPageTest (Desktop and Mobile)",
+      "status": "MANUAL",
+      "details": "Run external performance tests for desktop and mobile.",
+      "source": "<a href=\"https://www.webpagetest.org/\" target=\"_blank\" rel=\"noopener\">webpagetest.org</a>"
+    }
+  ],
+  "view_url": "../uploads/order_flow_reports/ofr_20260324_140849_09e441d7/report.pdf",
+  "download_url": "../uploads/order_flow_reports/ofr_20260324_140849_09e441d7/report.pdf",
+  "results": [
+    {
+      "email": "pritam.bhar+000020000@codeclouds.com",
+      "orderId": "",
+      "status": "FAILED",
+      "message": "page.goto: net::ERR_CERT_AUTHORITY_INVALID at https://blowoutcartdirect.com/dysonvacuum/?affid=1&click_id=test123&state=CA Call log: - navigating to \"https://blowoutcartdirect.com/dysonvacuum/?affid=1&click_id=test123&state=CA\", waiting until \"domcontentloaded\"",
+      "cardType": "VISA",
+      "cardLast4": "4442",
+      "screenshotFileName": "row_001_error.png",
+      "expectation": "prepaid",
+      "result": "FAIL",
+      "screenshotReportPath": "screenshots/row_001_error.png",
+      "screenshotPublicPath": "/uploads/order_flow_reports/ofr_20260324_140849_09e441d7/screenshots/row_001_error.png"
+    },
+    {
+      "email": "pritam.bhar+000020001@codeclouds.com",
+      "orderId": "",
+      "status": "FAILED",
+      "message": "page.goto: net::ERR_CERT_AUTHORITY_INVALID at https://blowoutcartdirect.com/dysonvacuum/?affid=1&click_id=test123&state=CA Call log: - navigating to \"https://blowoutcartdirect.com/dysonvacuum/?affid=1&click_id=test123&state=CA\", waiting until \"domcontentloaded\"",
+      "cardType": "Master",
+      "cardLast4": "4446",
+      "screenshotFileName": "row_002_error.png",
+      "expectation": "prepaid",
+      "result": "FAIL",
+      "screenshotReportPath": "screenshots/row_002_error.png",
+      "screenshotPublicPath": "/uploads/order_flow_reports/ofr_20260324_140849_09e441d7/screenshots/row_002_error.png"
+    }
+  ]
+}

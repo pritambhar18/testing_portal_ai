@@ -1,0 +1,10 @@
+{
+    "reportId": "ofr_20260403_230023_8e87dc0c",
+    "offerName": "test",
+    "baseUrl": "https://blowoutcartexpress.com/vizioclass4ksmarttv?affid=1&click_id=testingcc&state=CA",
+    "browser": "msedge",
+    "csvPath": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_reports\\ofr_20260403_230023_8e87dc0c\\input\\orders.csv",
+    "reportDir": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_reports\\ofr_20260403_230023_8e87dc0c",
+    "locatorsPath": "C:\\xampp\\htdocs\\testing_portal\\order_placement\\locators.json",
+    "requestedBy": "admin@test.com"
+}

@@ -1,0 +1,10 @@
+{
+    "reportId": "ofr_20260506_220542_60bd78d0",
+    "offerName": "test001",
+    "baseUrl": "https://bestvaultbargaindash.com/googlepixelbook/?affid=1&state=CA",
+    "browser": "msedge",
+    "csvPath": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_reports\\ofr_20260506_220542_60bd78d0\\input\\orders.csv",
+    "reportDir": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_reports\\ofr_20260506_220542_60bd78d0",
+    "locatorsPath": "C:\\xampp\\htdocs\\testing_portal\\order_placement\\locators.json",
+    "requestedBy": "admin@test.com"
+}

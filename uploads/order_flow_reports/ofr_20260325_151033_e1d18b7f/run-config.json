@@ -1,0 +1,10 @@
+{
+    "reportId": "ofr_20260325_151033_e1d18b7f",
+    "offerName": "test001",
+    "baseUrl": "https://exclusivebargainslab.com/sharkninjacordlessvacuum/?affid=1&click_id=243hjj&state=AL",
+    "browser": "chrome",
+    "csvPath": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_reports\\ofr_20260325_151033_e1d18b7f\\input\\orders.csv",
+    "reportDir": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_reports\\ofr_20260325_151033_e1d18b7f",
+    "locatorsPath": "C:\\xampp\\htdocs\\testing_portal\\order_placement\\locators.json",
+    "requestedBy": "admin@test.com"
+}

@@ -1,0 +1,13 @@
+{
+    "reportId": "ofr_20260509_104147_827fbbcf",
+    "offerName": "https://vaultnextmartelite.com/caremergencykit/?affid=1&state=CA",
+    "baseUrl": "https://vaultnextmartelite.com/caremergencykit/?affid=1&state=CA",
+    "browser": "msedge",
+    "headless": true,
+    "csvPath": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_reports\\ofr_20260509_104147_827fbbcf\\input\\orders.csv",
+    "reportDir": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_reports\\ofr_20260509_104147_827fbbcf",
+    "locatorsPath": "C:\\xampp\\htdocs\\testing_portal\\order_placement\\locators.json",
+    "requestedBy": "admin@example.com",
+    "clientRunId": "ofr_1778316107184_6a77588238312",
+    "stopSignalPath": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_stops\\ofr_1778316107184_6a77588238312.stop"
+}

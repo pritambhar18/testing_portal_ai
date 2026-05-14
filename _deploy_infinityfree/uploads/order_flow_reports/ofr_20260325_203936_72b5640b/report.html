@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Website Test Report</title>
+  <style>
+    body{font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#222;margin:16px;}
+    h1,h2,h3,h4{color:#0b4f8b;}
+    table{width:100%;border-collapse:collapse;margin:12px 0;}
+    th,td{border:1px solid #ccc;padding:8px;text-align:left;vertical-align:top;}
+    th{background:#f3f3f3;}
+    .pass{color:#2a7b2a;font-weight:bold;}
+    .fail{color:#c12a2a;font-weight:bold;}
+    .section{margin-bottom:24px;}
+    .meta{margin:6px 0;}
+  </style>
+</head>
+<body>
+  <h1>Test Case Report</h1>
+  <p class="meta"><strong>Offer Name:</strong> test5</p>
+  <p class="meta"><strong>Tested URL:</strong> https://exclusivebargainslab.com/sharkninjacordlessvacuum/?affid=1&amp;click_id=243hjj&amp;state=AL</p>
+  <p class="meta"><strong>Test Date:</strong> 2026-03-26 01:11:46</p>
+  <p class="meta"><strong>Tested By:</strong> Automated Order Flow Runner</p>
+  <p class="meta"><strong>Overall Result:</strong> <span class="pass">PASS</span></p>
+  <p class="meta"><strong>Report ID:</strong> ofr_20260325_203936_72b5640b</p>
+
+  <section class="section">
+    <h2>Credentials</h2>
+    <p><strong>Browser:</strong> chrome</p>
+    <p><strong>Execution Type:</strong> Order Flow Automation</p>
+    <p><strong>Total Rows:</strong> 1</p>
+  </section>
+
+  <section class="section">
+    <h2>Product Map</h2>
+    <p><strong>Primary Offer:</strong> test5</p>
+    <p><strong>Landing URL:</strong> https://exclusivebargainslab.com/sharkninjacordlessvacuum/?affid=1&amp;click_id=243hjj&amp;state=AL</p>
+    <p><strong>Report Artifact:</strong> HTML</p>
+  </section>
+
+  <section class="section">
+    <h2>Client Requirements</h2>
+    <p>Checkout should load correctly, card information should be entered successfully, and each row should record the final order outcome.</p>
+    <p>Required output fields retained in this report: Order ID, Result, Status, Card Type, Card Last 4, and Notes.</p>
+  </section>
+
+  <section class="section">
+    <h2>Desktop and Mobile</h2>
+    <p>This report captures automated checkout execution results. Mobile-specific layout validation is not part of this order-flow run unless separately configured.</p>
+  </section>
+
+  <section class="section">
+    <h2>Usability</h2>
+    <p>Checkout readiness, popup interruption handling, and form completion behavior were evaluated during the automated run.</p>
+  </section>
+
+  <section class="section">
+    <h2>Tested Rows</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Row</th>
+        <th>Email</th>
+        <th>Order ID</th>
+        <th>Result</th>
+        <th>Status</th>
+        <th>Card Type</th>
+        <th>Card Last 4</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td>1</td>
+      <td>pritam.bhar+000020000@codeclouds.com</td>
+      <td>6191807</td>
+      <td>PASS</td>
+      <td>PLACED</td>
+      <td>VISA</td>
+      <td>4442</td>
+      <td>Order placed successfully.</td>
+    </tr>
+  </tbody>
+  </table>
+  </section>
+
+  <section class="section">
+    <h2>Execution Details</h2>
+    <div>
+    <section style="margin-bottom:24px;">
+      <h3>Order no. 1</h3>
+      <p><strong>Email:</strong> pritam.bhar+000020000@codeclouds.com</p>
+      <p><strong>Order ID:</strong> 6191807</p>
+      <p><strong>Result:</strong> <strong class="pass">PASS</strong></p>
+      <p><strong>Status:</strong> PLACED</p>
+      <p><strong>Browser:</strong> chrome</p>
+      <p><strong>Card Type:</strong> VISA</p>
+      <p><strong>Card Last 4:</strong> 4442</p>
+      <p><strong>Expectation:</strong> prepaid</p>
+      <p><strong>Notes:</strong> Order placed successfully.</p>
+      <p><strong>Screenshot:</strong><br><img src="screenshots/row_001_4442.png" alt="Order no. 1 screenshot" style="display:block;max-width:340px;width:100%;height:auto;border:3px solid #2a7b2a;padding:3px;box-sizing:border-box;margin-top:6px;" /></p>
+    </section>
+  </div>
+  </section>
+
+  <section class="section">
+    <h2>Console Issue Verification</h2>
+    
+    <div style="margin-bottom:24px;">
+      <h3>1. 404 Issues in JS Console</h3>
+      <p>Verify no 404 errors appear while loading the checkout flow or clicking View/Download actions.</p>
+      <p><strong>Desktop</strong> - Status: MANUAL <span style="font-size:12px;color:#555;">Screenshot should show the dev tools console open; use a green border for pass and red for fail.</span></p><p><strong>Screenshot (Console Open):</strong> Pending capture.</p>
+      <p><strong>Mobile</strong> - Status: MANUAL <span style="font-size:12px;color:#555;">Screenshot should show the dev tools console open; use a green border for pass and red for fail.</span></p><p><strong>Screenshot (Console Open):</strong> Pending capture.</p>
+    </div>
+  
+    <div style="margin-bottom:24px;">
+      <h3>2. JavaScript Uncaught Exceptions</h3>
+      <p>Watch for any uncaught errors in the console during desktop/mobile interactions and log their stack traces.</p>
+      <p><strong>Desktop</strong> - Status: MANUAL <span style="font-size:12px;color:#555;">Screenshot should show the dev tools console open; use a green border for pass and red for fail.</span></p><p><strong>Screenshot (Console Open):</strong> Pending capture.</p>
+      <p><strong>Mobile</strong> - Status: MANUAL <span style="font-size:12px;color:#555;">Screenshot should show the dev tools console open; use a green border for pass and red for fail.</span></p><p><strong>Screenshot (Console Open):</strong> Pending capture.</p>
+    </div>
+  
+    <div style="margin-bottom:24px;">
+      <h3>3. Verify Ajax Does Not Trigger Multiple Times</h3>
+      <p>Trigger submit/up-sell actions while spamming Enter/Space and ensure the Fetch/XHR pane only shows a single request per action.</p>
+      <p><strong>Desktop</strong> - Status: MANUAL <span style="font-size:12px;color:#555;">Screenshot should show the dev tools console open; use a green border for pass and red for fail.</span></p><p><strong>Screenshot (Console Open):</strong> Pending capture.</p>
+      <p><strong>Mobile</strong> - Status: MANUAL <span style="font-size:12px;color:#555;">Screenshot should show the dev tools console open; use a green border for pass and red for fail.</span></p><p><strong>Screenshot (Console Open):</strong> Pending capture.</p>
+    </div>
+  
+  </section>
+
+  <section class="section">
+    <h2>Security and Performance</h2>
+    <p><strong>Summary:</strong> Total Rows: 1 | Placed Orders: 1 | Failed Orders: 0</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Check</th>
+          <th>Status</th>
+          <th>Details</th>
+          <th>Reference</th>
+        </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>1. HTTP2 Report Link</td>
+        <td>MANUAL</td>
+        <td>HTTP2 test executed and results captured on screen.<br/><small>Captured: https://tools.keycdn.com/http2-test</small><br/><img src="screenshots/01_http2.png" alt="1. HTTP2 Report Link screenshot" style="display:block;max-width:360px;width:100%;height:auto;border:3px solid #ccc;padding:3px;box-sizing:border-box;margin-top:6px;" /></td>
+        <td><a href="https://tools.keycdn.com/http2-test" target="_blank" rel="noopener">KeyCDN HTTP2 Test</a></td>
+      </tr>
+    
+      <tr>
+        <td>2. HTTPS Redirection Report Link</td>
+        <td>MANUAL</td>
+        <td>HTTPS redirection trace captured.<br/><small>Captured: https://wheregoes.com/trace/20261333429/</small><br/><img src="screenshots/02_https_redirection.png" alt="2. HTTPS Redirection Report Link screenshot" style="display:block;max-width:360px;width:100%;height:auto;border:3px solid #ccc;padding:3px;box-sizing:border-box;margin-top:6px;" /></td>
+        <td><a href="https://wheregoes.com/" target="_blank" rel="noopener">WhereGoes.com</a></td>
+      </tr>
+    
+      <tr>
+        <td>3. Domain Test URL Report Link</td>
+        <td><span class="fail">FAIL</span></td>
+        <td>Security task failed: locator.waitFor: Timeout 15000ms exceeded. Call log: - waiting for locator(&#39;#q&#39;) to be visible</td>
+        <td><a href="https://www.whatsmydns.net/" target="_blank" rel="noopener">WhatsMyDNS</a></td>
+      </tr>
+    
+      <tr>
+        <td>4. Safe Browsing Site Status Report Link</td>
+        <td>MANUAL</td>
+        <td>Safe Browsing lookup queued on Google Transparency Report.<br/><small>Captured: https://transparencyreport.google.com/safe-browsing/search?url=https:%2F%2Fexclusivebargainslab.com%2Fsharkninjacordlessvacuum%2F%3Faffid%3D1%26click_id%3D243hjj%26state%3DAL&amp;hl=en</small><br/><img src="screenshots/04_safe_browsing.png" alt="4. Safe Browsing Site Status Report Link screenshot" style="display:block;max-width:360px;width:100%;height:auto;border:3px solid #ccc;padding:3px;box-sizing:border-box;margin-top:6px;" /></td>
+        <td><a href="https://transparencyreport.google.com/safe-browsing/search" target="_blank" rel="noopener">Google Transparency Report</a></td>
+      </tr>
+    
+      <tr>
+        <td>5. Robots.txt Report Link</td>
+        <td>MANUAL</td>
+        <td>robots.txt snippet: # As a condition of accessing this website, you agree to abide by the following
+# content signals:
+
+# (a)  If a Content-Signal = yes, you may collect content for the corresponding
+#      use.
+# (b)  I<br/><small>Captured: https://exclusivebargainslab.com/robots.txt</small><br/><img src="screenshots/05_robots.png" alt="5. Robots.txt Report Link screenshot" style="display:block;max-width:360px;width:100%;height:auto;border:3px solid #ccc;padding:3px;box-sizing:border-box;margin-top:6px;" /></td>
+        <td><a href="https://exclusivebargainslab.com/robots.txt" target="_blank" rel="noopener">robots.txt</a></td>
+      </tr>
+    
+      <tr>
+        <td>6. Domain Expiry check Report Link</td>
+        <td><span class="fail">FAIL</span></td>
+        <td>Security task failed: locator.waitFor: Timeout 15000ms exceeded. Call log: - waiting for locator(&#39;#host&#39;) to be visible</td>
+        <td><a href="https://www.digicert.com/help/" target="_blank" rel="noopener">Digicert Help</a></td>
+      </tr>
+    
+      <tr>
+        <td>7. SSL Grade Report Link</td>
+        <td><span class="fail">FAIL</span></td>
+        <td>Security task failed: page.waitForSelector: Timeout 120000ms exceeded. Call log: - waiting for locator(&#39;a[href=\&#39;index.html\&#39;]&#39;) to be visible 16 × waiting for&quot; https://www.ssllabs.com/analyze.html?d=exclusivebargainslab.com&amp;latest&quot; navigation to finish... - navigated to &quot;https://www.ssllabs.com/analyze.html?d=exclusivebargainslab.com&amp;latest&quot;</td>
+        <td><a href="https://www.ssllabs.com/ssltest" target="_blank" rel="noopener">SSL Labs</a></td>
+      </tr>
+    
+      <tr>
+        <td>8. Google PageSpeed Mobile Report Link</td>
+        <td>MANUAL</td>
+        <td>PageSpeed mobile report loaded and diagnosis visible.<br/><small>Captured: https://pagespeed.web.dev/analysis/https-exclusivebargainslab-com-sharkninjacordlessvacuum/gmcuj4vjz7?form_factor=mobile</small><br/><img src="screenshots/08_pagespeed_mobile.png" alt="8. Google PageSpeed Mobile Report Link screenshot" style="display:block;max-width:360px;width:100%;height:auto;border:3px solid #ccc;padding:3px;box-sizing:border-box;margin-top:6px;" /></td>
+        <td><a href="https://pagespeed.web.dev/" target="_blank" rel="noopener">PageSpeed Insights</a></td>
+      </tr>
+    
+      <tr>
+        <td>9. Google PageSpeed Desktop Report Link</td>
+        <td><span class="fail">FAIL</span></td>
+        <td>Security task failed: page.waitForSelector: Timeout 60000ms exceeded. Call log: - waiting for locator(&#39;//*[contains(normalize-space(text()),\&#39;Diagnose performance\&#39;)]&#39;) to be visible 114 × locator resolved to 2 elements. Proceeding with the first one: &lt;div class=&quot;nfmh5d&quot;&gt;Diagnose performance issues&lt;/div&gt;</td>
+        <td><a href="https://pagespeed.web.dev/" target="_blank" rel="noopener">PageSpeed Insights</a></td>
+      </tr>
+    
+      <tr>
+        <td>10. HTML Optimisation Report Link</td>
+        <td>MANUAL</td>
+        <td>W3C HTML validator report queued.<br/><small>Captured: https://validator.w3.org/nu/?doc=https%3A%2F%2Fexclusivebargainslab.com%2Fsharkninjacordlessvacuum%2F%3Faffid%3D1%26click_id%3D243hjj%26state%3DAL</small><br/><img src="screenshots/10_html_opt.png" alt="10. HTML Optimisation Report Link screenshot" style="display:block;max-width:360px;width:100%;height:auto;border:3px solid #ccc;padding:3px;box-sizing:border-box;margin-top:6px;" /></td>
+        <td><a href="https://validator.w3.org/nu/" target="_blank" rel="noopener">W3C Validator</a></td>
+      </tr>
+    </tbody>
+    </table>
+  </section>
+</body>
+</html>

@@ -1,0 +1,10 @@
+[2026-04-03T21:22:04.748Z] Runner started for https://blowoutcartexpress.com/vizioclass4ksmarttv?affid=1&click_id=testingcc&state=CA
+[2026-04-03T21:22:07.333Z] Row 1: browser opened in private session for pritam.bhar+000020000@codeclouds.com.
+[2026-04-03T21:23:26.243Z] Row 1: failed with error=locator.waitFor: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for locator('input[name=\'creditCardNumber\']').first() to be visible[22m
+[2m    - waiting for" https://blowoutcartexpress.com/vizioclass4ksmarttv/checkout.php?token=4a88c9563ee9657b99bdb85c4fc92c9c69dee9dea67de178c6853a2af615c677&click_id=testingcc&prospect_id=2086557" navigation to finish...[22m
+[2m    - navigated to "https://blowoutcartexpress.com/vizioclass4ksmarttv/checkout.php?token=4a88c9563ee9657b99bdb85c4fc92c9c69dee9dea67de178c6853a2af615c677&click_id=testingcc&prospect_id=2086557"[22m
+.
+[2026-04-03T21:23:26.948Z] Row 1: browser session closed.
+[2026-04-03T23:34:10+02:00] PHP action: report registered in index.json for ofr_20260403_232202_331ffe91

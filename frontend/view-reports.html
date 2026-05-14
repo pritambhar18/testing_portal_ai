@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Test Reports - QA Testing Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: #667eea !important;
+        }
+
+        .container-main {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .page-header {
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .page-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            border-bottom: none;
+        }
+
+        .card-header h2 {
+            font-size: 1.5rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-body {
+            padding: 30px;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .reports-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 0;
+        }
+
+        .reports-table thead {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .reports-table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .reports-table td {
+            padding: 15px;
+            border-bottom: 1px solid #dee2e6;
+            color: #555;
+        }
+
+        .reports-table tbody tr {
+            transition: background-color 0.3s ease;
+        }
+
+        .reports-table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .reports-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .id-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .test-link {
+            color: #667eea;
+            text-decoration: none;
+            word-break: break-all;
+            max-width: 400px;
+            display: inline-block;
+        }
+
+        .test-link:hover {
+            text-decoration: underline;
+            color: #764ba2;
+        }
+
+        .view-report-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .view-report-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+
+        .view-report-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 30px;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            color: #dee2e6;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            color: #666;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: #999;
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
+
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 60px;
+        }
+
+        .spinner-border-lg {
+            width: 3rem;
+            height: 3rem;
+        }
+
+        .loading-text {
+            margin-left: 20px;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .alert {
+            border-radius: 8px;
+            border: none;
+            margin-bottom: 20px;
+        }
+
+        .alert-danger {
+            background-color: #fee;
+            color: #c00;
+            border-left: 4px solid #c00;
+        }
+
+        .alert-success {
+            background-color: #efe;
+            color: #080;
+            border-left: 4px solid #080;
+        }
+
+        .alert-info {
+            background-color: #eef;
+            color: #008;
+            border-left: 4px solid #008;
+        }
+
+        .badge {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 1.8rem;
+            }
+
+            .container-main {
+                margin: 20px auto;
+            }
+
+            .card-body {
+                padding: 15px;
+            }
+
+            .reports-table th,
+            .reports-table td {
+                padding: 10px;
+                font-size: 0.85rem;
+            }
+
+            .test-link {
+                max-width: 200px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-file-earmark-text me-2"></i>QA Testing Portal
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/view-reports">View Reports</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/api/health">Health Check</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-main">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1><i class="bi bi-file-earmark-pdf"></i> Test Reports</h1>
+            <p>View all generated Selenium test execution reports</p>
+        </div>
+
+        <!-- Content Card -->
+        <div class="content-card">
+            <div class="card-header">
+                <h2>
+                    <i class="bi bi-table"></i> Test Reports Table
+                </h2>
+            </div>
+
+            <div class="card-body">
+                <!-- Alert Messages -->
+                <div id="alertContainer"></div>
+
+                <!-- Loading State -->
+                <div id="loadingState" class="loading-spinner" style="display: none;">
+                    <div class="spinner-border spinner-border-lg" style="color: #667eea;" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <div class="loading-text">Loading reports...</div>
+                </div>
+
+                <!-- Reports Table -->
+                <div id="tableContainer" style="display: none;">
+                    <div class="table-responsive">
+                        <table class="reports-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 8%;">ID</th>
+                                    <th style="width: 40%;">Test Link</th>
+                                    <th style="width: 20%;">Execution Date</th>
+                                    <th style="width: 18%;">Report PDF</th>
+                                    <th style="width: 14%;">Created At</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reportsTableBody">
+                                <!-- Reports will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div id="emptyState" style="display: none;">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="bi bi-inbox"></i>
+                        </div>
+                        <h3>No Reports Available</h3>
+                        <p>Run a test to generate your first report</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        /**
+         * Show alert message
+         */
+        function showAlert(type, message) {
+            const container = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} alert-dismissible fade show`;
+            alert.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            container.appendChild(alert);
+
+            // Auto-remove after 5 seconds
+            setTimeout(() => alert.remove(), 5000);
+        }
+
+        /**
+         * Format date to readable format
+         */
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        }
+
+        /**
+         * Create table row from report data
+         */
+        function createReportRow(report) {
+            const row = document.createElement('tr');
+            const pdfLink = report.pdf_path ? report.pdf_path : '#';
+            const pdfButtonDisabled = !report.pdf_path ? 'disabled' : '';
+
+            row.innerHTML = `
+                <td>
+                    <span class="id-badge">#${report.id}</span>
+                </td>
+                <td>
+                    <a href="${report.test_link}" target="_blank" class="test-link" rel="noopener noreferrer" title="${report.test_link}">
+                        ${report.test_link}
+                    </a>
+                </td>
+                <td>
+                    ${formatDate(report.execution_date)}
+                </td>
+                <td>
+                    ${report.pdf_path ? `
+                        <a href="${report.pdf_path}" download class="view-report-btn">
+                            <i class="bi bi-download"></i> Download
+                        </a>
+                    ` : `
+                        <span class="badge bg-secondary">No Report</span>
+                    `}
+                </td>
+                <td>
+                    ${formatDate(report.created_at)}
+                </td>
+            `;
+
+            return row;
+        }
+
+        /**
+         * Load and display reports
+         */
+        async function loadReports() {
+            const loadingState = document.getElementById('loadingState');
+            const tableContainer = document.getElementById('tableContainer');
+            const emptyState = document.getElementById('emptyState');
+            const tableBody = document.getElementById('reportsTableBody');
+
+            try {
+                // Show loading state
+                loadingState.style.display = 'flex';
+                tableContainer.style.display = 'none';
+                emptyState.style.display = 'none';
+
+                // Fetch reports from API
+                const response = await fetch('/api/get-test-reports', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                // Handle response
+                if (!data.success) {
+                    throw new Error(data.error || 'Failed to fetch reports');
+                }
+
+                // Hide loading state
+                loadingState.style.display = 'none';
+
+                // Check if there are reports
+                if (!data.data || data.data.length === 0) {
+                    emptyState.style.display = 'block';
+                } else {
+                    // Populate table
+                    tableBody.innerHTML = '';
+                    data.data.forEach(report => {
+                        tableBody.appendChild(createReportRow(report));
+                    });
+                    tableContainer.style.display = 'block';
+
+                    showAlert('success', `✅ Loaded ${data.count} report(s) successfully`);
+                }
+
+            } catch (error) {
+                loadingState.style.display = 'none';
+                emptyState.style.display = 'block';
+                console.error('Error loading reports:', error);
+                showAlert('danger', `❌ Error: ${error.message}`);
+            }
+        }
+
+        /**
+         * Load reports on page load
+         */
+        document.addEventListener('DOMContentLoaded', () => {
+            loadReports();
+
+            // Refresh every 30 seconds
+            setInterval(loadReports, 30000);
+        });
+    </script>
+</body>
+</html>

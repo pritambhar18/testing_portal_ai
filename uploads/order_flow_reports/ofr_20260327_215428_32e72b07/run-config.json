@@ -1,0 +1,10 @@
+{
+    "reportId": "ofr_20260327_215428_32e72b07",
+    "offerName": "test",
+    "baseUrl": "https://exclusivebargainslab.com/yeticooler/?affid=1&click_id=test123456789",
+    "browser": "msedge",
+    "csvPath": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_reports\\ofr_20260327_215428_32e72b07\\input\\orders.csv",
+    "reportDir": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_reports\\ofr_20260327_215428_32e72b07",
+    "locatorsPath": "C:\\xampp\\htdocs\\testing_portal\\order_placement\\locators.json",
+    "requestedBy": "admin@test.com"
+}

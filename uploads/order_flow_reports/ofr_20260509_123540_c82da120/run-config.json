@@ -1,0 +1,13 @@
+{
+    "reportId": "ofr_20260509_123540_c82da120",
+    "offerName": "test",
+    "baseUrl": "https://vaultnextmartelite.com/dewalt20vmaxcombokit?affid=1&state=CA",
+    "browser": "msedge",
+    "headless": true,
+    "csvPath": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_reports\\ofr_20260509_123540_c82da120\\input\\orders.csv",
+    "reportDir": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_reports\\ofr_20260509_123540_c82da120",
+    "locatorsPath": "C:\\xampp\\htdocs\\testing_portal\\order_placement\\locators.json",
+    "requestedBy": "admin@example.com",
+    "clientRunId": "ofr_1778322940465_dc8f4e567bbca",
+    "stopSignalPath": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_stops\\ofr_1778322940465_dc8f4e567bbca.stop"
+}

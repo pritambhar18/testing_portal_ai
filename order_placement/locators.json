@@ -1,0 +1,40 @@
+{
+  "navigation": {
+    "checkoutReady": "body",
+    "postSubmitTimeoutMs": 60000
+  },
+  "prospect": {
+    "firstName": "input[name='firstName'], input[placeholder='First Name']",
+    "lastName": "input[name='lastName'], input[placeholder='Last Name']",
+    "phoneNumber": "input[name='phone'], input[placeholder='Phone Number']",
+    "email": "input[name='email'], input[placeholder='Email']",
+    "address": "input[name='shippingAddress1'], input[name='shippingAddress1'], input[name='shippingAddress1'], input[placeholder='Your Address']",
+    "city": "input[name='shippingCity'], input[name='shippingCity'], input[placeholder='Your City']",
+    "zipCode": "input[name='shippingZip'], input[name='shippingZip'], input[name='shippingZip'], input[placeholder='Zip / Postal']",
+    "continueButton": [
+      "button[type='submit']",
+      "button:has-text('Continue')",
+      "button:has-text('Next')",
+      "[data-qa='continue'], [data-action='continue']"
+    ]
+  },
+  "checkout": {
+    "cardNumber": "input[name='creditCardNumber']",
+    "afterCardNumberWaitMs": 5000,
+    "expMonth": "[name='expmonth']",
+    "expYear": "[name='expyear']",
+    "cvv": "[name='CVV']",
+    "submitButton": "#submitBtn"
+  },
+  "popups": {
+    "modalContent": ".modal-content",
+    "noThanksButton": "#nomaster",
+    "earlyCardPopupTimeoutMs": 5000,
+    "noThanksTimeoutMs": 15000
+  },
+  "result": {
+    "thankYouIndicator": ".site-header__title",
+    "failureIndicator": ".error_handler_body",
+    "thankYouTimeoutMs": 60000
+  }
+}

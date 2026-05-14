@@ -1,0 +1,144 @@
+{
+  "baseUrl": "https://example.com",
+  "forms": [
+    {
+      "name": "Checkout",
+      "path": "/checkout",
+      "formSelector": "form#checkoutForm",
+      "submitSelector": "button[type=\"submit\"]",
+      "fields": [
+        {
+          "name": "firstName",
+          "selector": "input[name=\"first_name\"]",
+          "required": true,
+          "type": "text",
+          "validValue": "Jane",
+          "maxLength": 40,
+          "errorSelector": "#firstNameError",
+          "errorMessages": {
+            "required": "First name is required",
+            "maxLength": "Maximum 40 characters allowed"
+          }
+        },
+        {
+          "name": "email",
+          "selector": "input[name=\"email\"]",
+          "required": true,
+          "type": "email",
+          "validValue": "test@example.com",
+          "errorSelector": "#emailError",
+          "errorMessages": {
+            "required": "Email is required",
+            "type": "Enter a valid email"
+          }
+        },
+        {
+          "name": "phone",
+          "selector": "input[name=\"phone\"]",
+          "required": true,
+          "type": "phone",
+          "validValue": "1234567890",
+          "errorSelector": "#phoneError",
+          "errorMessages": {
+            "required": "Phone number is required"
+          }
+        },
+        {
+          "name": "country",
+          "selector": "select[name=\"country\"]",
+          "required": true,
+          "type": "select",
+          "validValue": "United States"
+        },
+        {
+          "name": "state",
+          "selector": "select[name=\"state\"]",
+          "required": true,
+          "type": "select",
+          "validValue": "New York"
+        },
+        {
+          "name": "zip",
+          "selector": "input[name=\"zip\"]",
+          "required": true,
+          "type": "text",
+          "validValue": "10001",
+          "maxLength": 10,
+          "errorSelector": "#zipError"
+        },
+        {
+          "name": "city",
+          "selector": "input[name=\"city\"]",
+          "required": true,
+          "type": "text",
+          "validValue": "New York"
+        }
+      ]
+    }
+  ],
+  "geo": {
+    "path": "/checkout",
+    "countrySelector": "select[name=\"country\"]",
+    "stateSelector": "select[name=\"state\"]",
+    "citySelector": "input[name=\"city\"]",
+    "zipSelector": "input[name=\"zip\"]",
+    "zipMapping": [
+      {
+        "country": "United States",
+        "countryValue": "United States",
+        "zip": "10001",
+        "expectedState": "New York",
+        "expectedCity": "New York"
+      },
+      {
+        "country": "Canada",
+        "countryValue": "Canada",
+        "zip": "M5V 3L9",
+        "expectedState": "Ontario",
+        "expectedCity": "Toronto"
+      }
+    ],
+    "statelessCountry": "Hong Kong",
+    "requiredFields": [
+      {
+        "selector": "input[name=\"first_name\"]",
+        "value": "HK Buyer"
+      },
+      {
+        "selector": "input[name=\"email\"]",
+        "value": "hk@example.com"
+      },
+      {
+        "selector": "input[name=\"phone\"]",
+        "value": "1234567890"
+      }
+    ],
+    "successIndicatorSelector": ".thank-you-message",
+    "successUrlFragment": "thank-you"
+  },
+  "masking": {
+    "path": "/checkout",
+    "countrySelector": "select[name=\"country\"]",
+    "phoneField": {
+      "selector": "input[name=\"phone\"]",
+      "valid": "1234567890",
+      "invalid": "12345",
+      "beforeSelector": "input[name=\"first_name\"]"
+    },
+    "canadaZipField": {
+      "selector": "input[name=\"zip\"]",
+      "valid": "M5V 3L9",
+      "countryValue": "Canada"
+    },
+    "requiredFields": [
+      {
+        "selector": "input[name=\"first_name\"]",
+        "value": "Mask Test"
+      },
+      {
+        "selector": "input[name=\"email\"]",
+        "value": "mask@example.com"
+      }
+    ]
+  }
+}

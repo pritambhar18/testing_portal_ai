@@ -1,0 +1,122 @@
+{
+  "id": "ofr_20260417_134748_e44f1b94",
+  "offer_name": "test001",
+  "url": "https://blowoutcartcollective.com/reeseseastertakeoverbundle/?affid=1&click_id=test@123456789&state=CA",
+  "browser": "msedge",
+  "created_at": "2026-04-17 17:20:01",
+  "total_rows": 1,
+  "placed_orders": 1,
+  "failed_orders": 0,
+  "report_dir": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_reports\\ofr_20260417_134748_e44f1b94",
+  "report_format": "pdf",
+  "report_error": "",
+  "securityPerformance": [
+    {
+      "label": "1. HTTP2 Report Link",
+      "status": "MANUAL",
+      "details": "HTTP2 test executed and results captured on screen.",
+      "source": "<a href=\"https://tools.keycdn.com/http2-test\" target=\"_blank\" rel=\"noopener\">KeyCDN HTTP2 Test</a>",
+      "currentUrl": "https://tools.keycdn.com/http2-test",
+      "screenshotReportPath": "screenshots/01_http2.png",
+      "screenshotPublicPath": "../uploads/order_flow_reports/ofr_20260417_134748_e44f1b94/screenshots/01_http2.png"
+    },
+    {
+      "label": "2. HTTPS Redirection Report Link",
+      "status": "MANUAL",
+      "details": "HTTPS redirection trace captured.",
+      "source": "<a href=\"https://wheregoes.com/\" target=\"_blank\" rel=\"noopener\">WhereGoes.com</a>",
+      "currentUrl": "https://wheregoes.com/trace/20261703786/",
+      "screenshotReportPath": "screenshots/02_https_redirection.png",
+      "screenshotPublicPath": "../uploads/order_flow_reports/ofr_20260417_134748_e44f1b94/screenshots/02_https_redirection.png"
+    },
+    {
+      "label": "3. Domain Test URL Report Link",
+      "status": "FAIL",
+      "details": "Security task failed: Unable to fill any fallback input field.",
+      "source": "<a href=\"https://www.whatsmydns.net/\" target=\"_blank\" rel=\"noopener\">WhatsMyDNS</a>",
+      "currentUrl": "https://www.whatsmydns.net/",
+      "screenshotReportPath": "screenshots/03_whatsmydns_plain.png",
+      "screenshotPublicPath": "../uploads/order_flow_reports/ofr_20260417_134748_e44f1b94/screenshots/03_whatsmydns_plain.png"
+    },
+    {
+      "label": "4. Safe Browsing Site Status Report Link",
+      "status": "MANUAL",
+      "details": "Safe Browsing lookup queued on Google Transparency Report.",
+      "source": "<a href=\"https://transparencyreport.google.com/safe-browsing/search\" target=\"_blank\" rel=\"noopener\">Google Transparency Report</a>",
+      "currentUrl": "https://transparencyreport.google.com/safe-browsing/search?url=https:%2F%2Fblowoutcartcollective.com%2Freeseseastertakeoverbundle%2F%3Faffid%3D1%26click_id%3Dtest@123456789%26state%3DCA&hl=en",
+      "screenshotReportPath": "screenshots/04_safe_browsing.png",
+      "screenshotPublicPath": "../uploads/order_flow_reports/ofr_20260417_134748_e44f1b94/screenshots/04_safe_browsing.png"
+    },
+    {
+      "label": "5. Robots.txt Report Link",
+      "status": "MANUAL",
+      "details": "robots.txt snippet: # As a condition of accessing this website, you agree to abide by the following\n# content signals:\n\n# (a)  If a Content-Signal = yes, you may collect content for the corresponding\n#      use.\n# (b)  I",
+      "source": "<a href=\"https://blowoutcartcollective.com/robots.txt\" target=\"_blank\" rel=\"noopener\">robots.txt</a>",
+      "currentUrl": "https://blowoutcartcollective.com/robots.txt",
+      "screenshotReportPath": "screenshots/05_robots.png",
+      "screenshotPublicPath": "../uploads/order_flow_reports/ofr_20260417_134748_e44f1b94/screenshots/05_robots.png"
+    },
+    {
+      "label": "6. Domain Expiry check Report Link",
+      "status": "FAIL",
+      "details": "Security task failed: Unable to fill any fallback input field.",
+      "source": "<a href=\"https://www.digicert.com/help/\" target=\"_blank\" rel=\"noopener\">Digicert Help</a>",
+      "currentUrl": "https://www.digicert.com/help/",
+      "screenshotReportPath": "screenshots/06_domain_expiry.png",
+      "screenshotPublicPath": "../uploads/order_flow_reports/ofr_20260417_134748_e44f1b94/screenshots/06_domain_expiry.png"
+    },
+    {
+      "label": "7. SSL Grade Report Link",
+      "status": "MANUAL",
+      "details": "SSL Labs scan queued; check index.html for grade once ready.",
+      "source": "<a href=\"https://www.ssllabs.com/ssltest\" target=\"_blank\" rel=\"noopener\">SSL Labs</a>",
+      "currentUrl": "https://www.ssllabs.com/analyze.html?d=blowoutcartcollective.com&latest",
+      "screenshotReportPath": "screenshots/07_ssllabs.png",
+      "screenshotPublicPath": "../uploads/order_flow_reports/ofr_20260417_134748_e44f1b94/screenshots/07_ssllabs.png"
+    },
+    {
+      "label": "8. Google PageSpeed Mobile Report Link",
+      "status": "MANUAL",
+      "details": "PageSpeed mobile report loaded and diagnosis visible.",
+      "source": "<a href=\"https://pagespeed.web.dev/\" target=\"_blank\" rel=\"noopener\">PageSpeed Insights</a>",
+      "currentUrl": "https://pagespeed.web.dev/analysis/https-blowoutcartcollective-com-reeseseastertakeoverbundle/lc4ckos6ke?form_factor=mobile",
+      "screenshotReportPath": "screenshots/08_pagespeed_mobile.png",
+      "screenshotPublicPath": "../uploads/order_flow_reports/ofr_20260417_134748_e44f1b94/screenshots/08_pagespeed_mobile.png"
+    },
+    {
+      "label": "9. Google PageSpeed Desktop Report Link",
+      "status": "MANUAL",
+      "details": "PageSpeed desktop diagnosis ready for review.",
+      "source": "<a href=\"https://pagespeed.web.dev/\" target=\"_blank\" rel=\"noopener\">PageSpeed Insights</a>",
+      "currentUrl": "https://pagespeed.web.dev/analysis/https-blowoutcartcollective-com-reeseseastertakeoverbundle/gblsf7mu6u?form_factor=desktop",
+      "screenshotReportPath": "screenshots/09_pagespeed_desktop.png",
+      "screenshotPublicPath": "../uploads/order_flow_reports/ofr_20260417_134748_e44f1b94/screenshots/09_pagespeed_desktop.png"
+    },
+    {
+      "label": "10. HTML Optimisation Report Link",
+      "status": "MANUAL",
+      "details": "W3C HTML validator report queued.",
+      "source": "<a href=\"https://validator.w3.org/nu/\" target=\"_blank\" rel=\"noopener\">W3C Validator</a>",
+      "currentUrl": "https://validator.w3.org/nu/?doc=https%3A%2F%2Fblowoutcartcollective.com%2Freeseseastertakeoverbundle%2F%3Faffid%3D1%26click_id%3Dtest%40123456789%26state%3DCA",
+      "screenshotReportPath": "screenshots/10_html_opt.png",
+      "screenshotPublicPath": "../uploads/order_flow_reports/ofr_20260417_134748_e44f1b94/screenshots/10_html_opt.png"
+    }
+  ],
+  "view_url": "../uploads/order_flow_reports/ofr_20260417_134748_e44f1b94/report.pdf",
+  "download_url": "../uploads/order_flow_reports/ofr_20260417_134748_e44f1b94/report.pdf",
+  "results": [
+    {
+      "email": "pritam.bhar+000020000@codeclouds.com",
+      "orderId": "6659769",
+      "status": "PLACED",
+      "message": "Order placed successfully.",
+      "cardType": "VISA",
+      "cardLast4": "4442",
+      "screenshotFileName": "row_001_4442.png",
+      "expectation": "prepaid",
+      "result": "PASS",
+      "screenshotReportPath": "screenshots/row_001_4442.png",
+      "screenshotPublicPath": "/uploads/order_flow_reports/ofr_20260417_134748_e44f1b94/screenshots/row_001_4442.png"
+    }
+  ]
+}

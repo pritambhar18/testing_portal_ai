@@ -1,0 +1,8 @@
+[2026-04-17T06:18:47.639Z] Runner started for https://blowoutcartdirect.com/tfaladvancednonstickcookwareset/?affid=1&click_id=test@123456789
+[2026-04-17T06:18:49.296Z] Row 1: browser opened in private session for pritam.bhar+000020000@codeclouds.com.
+[2026-04-17T06:19:24.975Z] Row 1: failed with error=locator.waitFor: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for locator('input[name=\'creditCardNumber\']').first() to be visible[22m
+.
+[2026-04-17T06:19:25.673Z] Row 1: browser session closed.
+[2026-04-17T08:28:31+02:00] PHP action: report registered in index.json for ofr_20260417_081842_910c4ffa
