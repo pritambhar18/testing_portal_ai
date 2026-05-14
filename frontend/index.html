@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QA Testing Portal</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+        .container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        p {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        .buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        a {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        a:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+        .secondary:hover {
+            background: #d0d0d0;
+        }
+        .status {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            border-left: 4px solid #667eea;
+        }
+        .status-ok { color: #4caf50; }
+        .status-loading { color: #ff9800; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 QA Testing Portal</h1>
+        <p>Welcome to the automated testing and order flow management system.</p>
+        
+        <div class="buttons">
+            <a href="/view-reports">📊 View Reports</a>
+            <a href="/api/health" class="secondary">🔍 API Status</a>
+        </div>
+
+        <div class="status">
+            <p><strong>System Status:</strong></p>
+            <p class="status-loading" id="status">Checking server...</p>
+        </div>
+    </div>
+
+    <script>
+        // Check API health
+        fetch('/api/health')
+            .then(r => r.json())
+            .then(data => {
+                const statusEl = document.getElementById('status');
+                statusEl.className = 'status-ok';
+                statusEl.textContent = '✅ Server is running and ready!';
+            })
+            .catch(() => {
+                const statusEl = document.getElementById('status');
+                statusEl.className = 'status-loading';
+                statusEl.textContent = '⚠️ Unable to connect to API';
+            });
+    </script>
+</body>
+</html>

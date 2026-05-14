@@ -47,7 +47,8 @@ app.use((req, res, next) => {
 // ============================================
 
 // Serve static files (HTML, CSS, JS, etc.)
-app.use(express.static(join(__dirname, 'frontend')));
+const frontendPath = join(__dirname, 'frontend');
+app.use(express.static(frontendPath));
 app.use('/reports', express.static(join(__dirname, 'reports')));
 
 // ============================================
@@ -86,11 +87,27 @@ app.get('/api/get-test-reports', getTestReports);
  * Serve frontend pages
  */
 app.get('/', (req, res) => {
-  res.sendFile(join(__dirname, 'frontend', 'index.html'));
+  const indexPath = join(frontendPath, 'index.html');
+  res.sendFile(indexPath, (err) => {
+    if (err) {
+      console.error('Frontend error:', err);
+      res.status(200).json({ 
+        success: true, 
+        message: 'API Server is running',
+        path: frontendPath 
+      });
+    }
+  });
 });
 
 app.get('/view-reports', (req, res) => {
-  res.sendFile(join(__dirname, 'frontend', 'view-reports.html'));
+  const viewReportsPath = join(frontendPath, 'view-reports.html');
+  res.sendFile(viewReportsPath, (err) => {
+    if (err) {
+      console.error('View reports error:', err);
+      res.status(404).json({ error: 'Page not found' });
+    }
+  });
 });
 
 // ============================================
