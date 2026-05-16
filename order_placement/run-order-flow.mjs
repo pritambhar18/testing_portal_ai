@@ -159,10 +159,19 @@ function getBrowserLauncher(browserName) {
   if (browserName === 'webkit') {
     return { launcher: webkit, options: {} };
   }
+  const useBundledChromium = process.env.NODE_ENV === 'production'
+    || process.platform === 'linux'
+    || process.env.PLAYWRIGHT_USE_BUNDLED_CHROMIUM === 'true';
   if (browserName === 'chrome') {
+    if (useBundledChromium) {
+      return { launcher: chromium, options: {} };
+    }
     return { launcher: chromium, options: { channel: 'chrome' } };
   }
   if (browserName === 'msedge') {
+    if (useBundledChromium) {
+      return { launcher: chromium, options: {} };
+    }
     return { launcher: chromium, options: { channel: 'msedge' } };
   }
   return { launcher: chromium, options: {} };
