@@ -375,7 +375,21 @@ function formatCheckStatus(status) {
   if (status === 'SKIPPED') {
     return '<span class="manual">SKIPPED</span>';
   }
-  return escapeHtml(status || 'MANUAL');
+  if (status === 'MANUAL') {
+    return '<span class="manual">REVIEW</span>';
+  }
+  return escapeHtml(status || 'REVIEW');
+}
+
+function classifyOrderIssue(item) {
+  const text = `${item.status || ''} ${item.message || ''} ${item.expectation || ''}`.toLowerCase();
+  if (/payment|card|decline|checkout|popup|submit|thank-you|thankyou|order/.test(text)) {
+    return { severity: 'High', priority: 'P1' };
+  }
+  if (/validation|required|field|zip|phone|email|address/.test(text)) {
+    return { severity: 'Medium', priority: 'P2' };
+  }
+  return { severity: 'Low', priority: 'P3' };
 }
 
 async function traceRedirects(url, maxRedirects = 10) {
@@ -565,12 +579,32 @@ function withTimeout(promise, timeoutMs, message) {
 function buildSecurityScreenshotPaths(reportId, screenshotDir, fileName) {
   const sanitizedReportId = (reportId || 'security').replace(/[^a-zA-Z0-9_-]/g, '_');
   const screenshotReportPath = `screenshots/${fileName}`;
-  const screenshotPublicPath = `../uploads/order_flow_reports/${sanitizedReportId}/${screenshotReportPath}`;
+  const screenshotPublicPath = `/uploads/order_flow_reports/${sanitizedReportId}/${screenshotReportPath}`;
   return {
     screenshotReportPath,
     screenshotPublicPath,
     fullScreenshotPath: path.join(screenshotDir, fileName),
   };
+}
+
+async function createSecurityPlaceholderScreenshot(reportId, screenshotDir, taskId, label, message) {
+  const safeTaskId = String(taskId || 'security').replace(/[^a-zA-Z0-9_-]/g, '_');
+  const fileName = `${safeTaskId}_placeholder.svg`;
+  const paths = buildSecurityScreenshotPaths(reportId, screenshotDir, fileName);
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="900" height="520" viewBox="0 0 900 520">
+  <rect width="900" height="520" fill="#f8fafc"/>
+  <rect x="36" y="36" width="828" height="448" rx="18" fill="#ffffff" stroke="#d8dee9" stroke-width="2"/>
+  <text x="70" y="110" fill="#111827" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700">Screenshot not captured</text>
+  <text x="70" y="162" fill="#344054" font-family="Arial, Helvetica, sans-serif" font-size="22">${escapeHtml(label || 'Security check')}</text>
+  <foreignObject x="70" y="198" width="760" height="210">
+    <div xmlns="http://www.w3.org/1999/xhtml" style="font-family:Arial,Helvetica,sans-serif;font-size:20px;line-height:1.45;color:#667085;">
+      ${escapeHtml(message || 'The external security tool did not render a usable screenshot before timeout.')}
+    </div>
+  </foreignObject>
+  <text x="70" y="440" fill="#0f766e" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700">QA Testing Portal</text>
+</svg>`;
+  await fs.writeFile(paths.fullScreenshotPath, svg, 'utf8');
+  return paths;
 }
 
 async function waitForVisibleMatchingLocator(page, selector, timeout = 15000) {
@@ -728,8 +762,6 @@ async function securityClick(page, selectors, options = {}) {
 function createSecurityTasks({ baseUrl, domain, domainRoot, httpUrl }) {
   const tasks = [];
   const encodedTestUrl = encodeURIComponent(baseUrl);
-  const hasWww = domain.startsWith('www.');
-  const withWwwValue = hasWww ? domain : `www.${domain}`;
   const withoutWwwValue = domain.replace(/^www\./, '');
 
   tasks.push({
@@ -766,116 +798,6 @@ function createSecurityTasks({ baseUrl, domain, domainRoot, httpUrl }) {
       return { details: 'HTTPS redirection trace captured.' };
     },
   });
-
-  if (hasWww) {
-    tasks.push({
-      id: '03_whatsmydns_with',
-      label: '3a. Domain Test URL (with www)',
-      url: 'https://www.whatsmydns.net/',
-      referenceUrl: 'https://www.whatsmydns.net/',
-      referenceLabel: 'WhatsMyDNS',
-      priority: 2,
-      estimatedMs: 12000,
-      heavy: false,
-      action: async ({ page }) => {
-        await securityFill(
-          page,
-          [
-            '#q',
-            "xpath=//input[contains(translate(@name,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'domain')]",
-            "xpath=//input[contains(translate(@placeholder,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'domain')]",
-            "xpath=//input[contains(translate(@aria-label,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'domain')]",
-          ],
-          withWwwValue,
-          { timeout: 25000 },
-        );
-        await securityClick(
-          page,
-          [
-            "xpath=(//span[@class='ml-2'])[1]",
-            "xpath=//button[contains(normalize-space(.),'Search')]",
-            "xpath=//input[@type='submit']",
-          ],
-          { timeout: 25000 },
-        );
-        await page.waitForSelector("xpath=(//span[@class='ml-2'])[1]", { timeout: 20000 });
-        await page.waitForTimeout(1500);
-        return { details: `WhatsMyDNS lookup for ${withWwwValue}.` };
-      },
-    });
-
-    tasks.push({
-      id: '03_whatsmydns_without',
-      label: '3b. Domain Test URL (without www)',
-      url: 'https://www.whatsmydns.net/',
-      referenceUrl: 'https://www.whatsmydns.net/',
-      referenceLabel: 'WhatsMyDNS',
-      priority: 2,
-      estimatedMs: 12000,
-      heavy: false,
-      action: async ({ page }) => {
-        await securityFill(
-          page,
-          [
-            '#q',
-            "xpath=//input[contains(translate(@name,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'domain')]",
-            "xpath=//input[contains(translate(@placeholder,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'domain')]",
-            "xpath=//input[contains(translate(@aria-label,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'domain')]",
-          ],
-          withoutWwwValue,
-          { timeout: 25000 },
-        );
-        await securityClick(
-          page,
-          [
-            "xpath=(//span[@class='ml-2'])[1]",
-            "xpath=//button[contains(normalize-space(.),'Search')]",
-            "xpath=//input[@type='submit']",
-          ],
-          { timeout: 25000 },
-        );
-        await page.waitForSelector("xpath=(//span[@class='ml-2'])[1]", { timeout: 20000 });
-        await page.waitForTimeout(1500);
-        return { details: `WhatsMyDNS lookup for ${withoutWwwValue}.` };
-      },
-    });
-  } else {
-    tasks.push({
-      id: '03_whatsmydns_plain',
-      label: '3. Domain Test URL Report Link',
-      url: 'https://www.whatsmydns.net/',
-      referenceUrl: 'https://www.whatsmydns.net/',
-      referenceLabel: 'WhatsMyDNS',
-      priority: 2,
-      estimatedMs: 12000,
-      heavy: false,
-      action: async ({ page }) => {
-        await securityFill(
-          page,
-          [
-            '#q',
-            "xpath=//input[contains(translate(@name,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'domain')]",
-            "xpath=//input[contains(translate(@placeholder,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'domain')]",
-            "xpath=//input[contains(translate(@aria-label,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'domain')]",
-          ],
-          withoutWwwValue,
-          { timeout: 25000 },
-        );
-        await securityClick(
-          page,
-          [
-            "xpath=(//span[@class='ml-2'])[1]",
-            "xpath=//button[contains(normalize-space(.),'Search')]",
-            "xpath=//input[@type='submit']",
-          ],
-          { timeout: 25000 },
-        );
-        await page.waitForSelector("xpath=(//span[@class='ml-2'])[1]", { timeout: 20000 });
-        await page.waitForTimeout(1500);
-        return { details: `WhatsMyDNS lookup for ${withoutWwwValue}.` };
-      },
-    });
-  }
 
   tasks.push({
     id: '04_safe_browsing',
@@ -1140,12 +1062,10 @@ async function executeSecurityTasks(tasks, screenshotDir, reportId, options) {
             status: 'SKIPPED',
             details: `Skipped because the ${Math.round(options.totalBudgetMs / 1000)}s report budget was exhausted.`,
             source: buildToolLink(task.referenceUrl, task.referenceLabel || new URL(task.referenceUrl).hostname),
-            currentUrl: task.url,
-            screenshotReportPath,
-            screenshotPublicPath,
-          });
-          continue;
-        }
+          currentUrl: task.url,
+        });
+        continue;
+      }
 
         const taskTimeoutMs = Math.max(
           5000,
@@ -1166,15 +1086,29 @@ async function executeSecurityTasks(tasks, screenshotDir, reportId, options) {
             `${task.label} timed out while collecting the report screenshot.`,
           )
           : {};
-        await takeScreenshot(page, fullScreenshotPath);
+        let finalScreenshotReportPath = screenshotReportPath;
+        let finalScreenshotPublicPath = screenshotPublicPath;
+        try {
+          await takeScreenshot(page, fullScreenshotPath);
+        } catch (screenshotError) {
+          const placeholder = await createSecurityPlaceholderScreenshot(
+            reportId,
+            screenshotDir,
+            task.id,
+            task.label,
+            sanitizeMessage(screenshotError.message),
+          );
+          finalScreenshotReportPath = placeholder.screenshotReportPath;
+          finalScreenshotPublicPath = placeholder.screenshotPublicPath;
+        }
         results.push({
           label: task.label,
           status: 'MANUAL',
           details: actionResult?.details || `Screenshot captured: ${task.label}`,
           source: buildToolLink(task.referenceUrl, task.referenceLabel || new URL(task.referenceUrl).hostname),
           currentUrl: page.url(),
-          screenshotReportPath,
-          screenshotPublicPath,
+          screenshotReportPath: finalScreenshotReportPath,
+          screenshotPublicPath: finalScreenshotPublicPath,
         });
       } catch (error) {
         let failedUrl = task.url;
@@ -1183,15 +1117,29 @@ async function executeSecurityTasks(tasks, screenshotDir, reportId, options) {
         } catch {
           // keep fallback
         }
-        await takeScreenshot(page, fullScreenshotPath).catch(() => {});
+        let finalScreenshotReportPath = screenshotReportPath;
+        let finalScreenshotPublicPath = screenshotPublicPath;
+        try {
+          await takeScreenshot(page, fullScreenshotPath);
+        } catch {
+          const placeholder = await createSecurityPlaceholderScreenshot(
+            reportId,
+            screenshotDir,
+            task.id,
+            task.label,
+            sanitizeMessage(error.message),
+          );
+          finalScreenshotReportPath = placeholder.screenshotReportPath;
+          finalScreenshotPublicPath = placeholder.screenshotPublicPath;
+        }
         results.push({
           label: task.label,
           status: 'FAIL',
           details: `Security task failed: ${sanitizeMessage(error.message)}`,
           source: buildToolLink(task.referenceUrl, task.referenceLabel || new URL(task.referenceUrl).hostname),
           currentUrl: failedUrl,
-          screenshotReportPath,
-          screenshotPublicPath,
+          screenshotReportPath: finalScreenshotReportPath,
+          screenshotPublicPath: finalScreenshotPublicPath,
         });
       } finally {
         await page.close().catch(() => {});
@@ -1223,13 +1171,6 @@ async function collectSecurityPerformanceChecks(baseUrl, screenshotDir, reportId
   const executed = await executeSecurityTasks(selected, screenshotDir, reportId, options);
 
   return [
-    {
-      label: 'Security report mode',
-      status: 'MANUAL',
-      details: `Mode=${options.mode}, budget=${Math.round(options.totalBudgetMs / 1000)}s, selected=${selected.length}, skipped=${skipped.length}.`,
-      source: '',
-      currentUrl: normalizedUrl,
-    },
     ...executed,
     ...skipped,
   ];
@@ -1606,27 +1547,49 @@ function buildHtmlReport(report) {
     </section>
   `).join('');
 
+  const issueSections = report.results
+    .map((item, index) => ({ item, rowNumber: index + 1 }))
+    .filter(({ item }) => String(item.result || item.status || '').toUpperCase() !== 'PASS' && String(item.status || '').toUpperCase() !== 'PLACED')
+    .map(({ item, rowNumber }, index) => {
+      const issue = classifyOrderIssue(item);
+      return `
+      <section class="issue-card">
+        <h3>${index + 1}. ${escapeHtml(item.email || 'Order flow issue')} <span>Severity: ${issue.severity} | Priority: ${issue.priority}</span></h3>
+        <p><strong>Test step:</strong></p>
+        <ul class="step-list">
+          <li>Open the browser and navigate to ${escapeHtml(report.url)}.</li>
+          <li>Load the landing page for CSV row ${rowNumber} and fill the prospect details.</li>
+          <li>Continue to checkout, enter payment details, and submit the order.</li>
+          <li>Verify the thank-you page, confirmation state, or expected decline result.</li>
+        </ul>
+        <p><strong>Test description:</strong> The automation could not complete the expected checkout journey for this row. Expected behavior: the page should accept the row data, move from landing page to checkout, process the configured test card, and return a clear order confirmation or expected decline result. Actual result: ${escapeHtml(item.message || 'The order flow did not complete successfully.')}</p>
+      </section>
+    `;
+    }).join('');
+
   const securityCards = visibleSecurityPerformance.map((check) => {
-    const reportLink = check.source || '-';
     const screenshotSrc = check.screenshotReportPath
       ? escapeHtml(check.screenshotReportPath)
       : '';
     const screenshotHtml = screenshotSrc
       ? `<img src="${screenshotSrc}" alt="${escapeHtml(check.label || 'security check')} screenshot" />`
-      : '<p class="security-placeholder">Screenshot pending</p>';
-    const detailNote = check.details
+      : '';
+    const statusText = String(check.status || '').trim().toUpperCase();
+    const detailText = String(check.details || '').trim();
+    const showStatus = statusText && !['MANUAL', 'SKIPPED'].includes(statusText);
+    const detailNote = detailText && !/^Mode=/i.test(detailText) && !/budget=\d+s/i.test(detailText)
       ? `<p class="security-detail">${escapeHtml(check.details)}</p>`
+      : '';
+    const reportLinkHtml = check.source
+      ? `<p class="security-label">REPORT LINK</p><p class="security-link">${check.source}</p>`
       : '';
     return `
       <div class="security-card">
         <p class="security-label">Check point</p>
         <p class="security-title">${escapeHtml(check.label || '-')}</p>
-        <p class="security-label">Status</p>
-        <p class="security-status">${formatCheckStatus(check.status)}</p>
-        <p class="security-label">REPORT LINK</p>
-        <p class="security-link">${reportLink}</p>
-        <p class="security-label">screen short</p>
-        <div class="security-screenshot">${screenshotHtml}</div>
+        ${showStatus ? `<p class="security-label">Status</p><p class="security-status">${formatCheckStatus(check.status)}</p>` : ''}
+        ${reportLinkHtml}
+        ${screenshotHtml ? `<p class="security-label">screen shot</p><div class="security-screenshot">${screenshotHtml}</div>` : ''}
         ${detailNote}
       </div>
     `;
@@ -1637,18 +1600,26 @@ function buildHtmlReport(report) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Website Test Report</title>
+  <title>Management QA Test Report</title>
   <style>
-    body{font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#222;margin:16px;}
-    h1,h2,h3,h4{color:#0b4f8b;}
-    table{width:100%;border-collapse:collapse;margin:12px 0;}
-    th,td{border:1px solid #ccc;padding:8px;text-align:left;vertical-align:top;}
-    th{background:#f3f3f3;}
+    body{font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#1f2937;margin:24px;line-height:1.45;background:#fff;}
+    h1,h2,h3,h4{color:#0f172a;}
+    h1{font-size:26px;margin:0 0 6px;}
+    h2{font-size:17px;margin:24px 0 10px;border-bottom:1px solid #d8dee9;padding-bottom:6px;}
+    table{width:100%;border-collapse:collapse;margin:12px 0;font-size:12.5px;}
+    th,td{border:1px solid #d8dee9;padding:8px;text-align:left;vertical-align:top;}
+    th{background:#f8fafc;color:#475467;text-transform:uppercase;font-size:11px;}
     .pass{color:#2a7b2a;font-weight:bold;}
     .fail{color:#c12a2a;font-weight:bold;}
     .manual{color:#9a6700;font-weight:bold;}
     .section{margin-bottom:24px;}
     .meta{margin:6px 0;}
+    .cover{border:1px solid #d8dee9;border-left:5px solid #0f766e;border-radius:8px;padding:18px;margin-bottom:18px;}
+    .cover .meta{color:#667085;}
+    .summary-grid{display:flex;flex-wrap:wrap;gap:12px;margin:16px 0;}
+    .summary-card{background:#f8fafc;border:1px solid #d8dee9;border-radius:8px;padding:12px;min-width:140px;}
+    .summary-card span{display:block;color:#667085;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+    .summary-card strong{display:block;font-size:22px;color:#111827;}
     .security-cards{display:flex;flex-wrap:wrap;gap:16px;margin-top:20px;}
     .security-card{background:#fff;border:1px solid #ddd;border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,.08);padding:16px;width:calc(50% - 16px);box-sizing:border-box;}
     .security-label{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:#666;margin:8px 0 2px;}
@@ -1659,17 +1630,35 @@ function buildHtmlReport(report) {
     .security-screenshot img{max-width:360px;width:100%;height:auto;border:3px solid #ccc;padding:3px;border-radius:8px;box-sizing:border-box;}
     .security-detail{font-size:.85rem;color:#555;margin-top:12px;}
     .security-placeholder{font-size:.85rem;color:#999;margin:0;}
+    .issue-card{border:1px solid #fecdca;background:#fff7f6;border-radius:10px;padding:14px;margin:12px 0;}
+    .issue-card h3{font-size:1rem;color:#b42318;margin:0 0 8px;}
+    .issue-card h3 span{display:block;font-size:.78rem;color:#666;margin-top:3px;}
+    .issue-card p{margin:6px 0;}
+    .step-list{margin:6px 0 8px 18px;padding:0;}
+    .step-list li{margin:4px 0;line-height:1.45;}
     @media (max-width:768px){.security-card{width:100%;}}
   </style>
 </head>
 <body>
-  <h1>Test Case Report</h1>
-  <p class="meta"><strong>Offer Name:</strong> ${escapeHtml(report.offer_name || '-')}</p>
-  <p class="meta"><strong>Tested URL:</strong> ${escapeHtml(report.url)}</p>
-  <p class="meta"><strong>Test Date:</strong> ${escapeHtml(report.created_at)}</p>
-  <p class="meta"><strong>Tested By:</strong> Automated Order Flow Runner</p>
-  <p class="meta"><strong>Overall Result:</strong> <span class="${overallResult === 'PASS' ? 'pass' : 'fail'}">${overallResult}</span></p>
-  <p class="meta"><strong>Report ID:</strong> ${escapeHtml(report.id)}</p>
+  <section class="cover">
+    <h1>Management QA Test Report</h1>
+    <p class="meta"><strong>Offer Name:</strong> ${escapeHtml(report.offer_name || '-')}</p>
+    <p class="meta"><strong>Tested URL:</strong> ${escapeHtml(report.url)}</p>
+    <p class="meta"><strong>Test Date:</strong> ${escapeHtml(report.created_at)}</p>
+    <p class="meta"><strong>Prepared By:</strong> QA Testing Portal</p>
+    <p class="meta"><strong>Report ID:</strong> ${escapeHtml(report.id)}</p>
+  </section>
+
+  <section class="section">
+    <h2>Executive Summary</h2>
+    <div class="summary-grid">
+      <div class="summary-card"><span>Overall Result</span><strong class="${overallResult === 'PASS' ? 'pass' : 'fail'}">${overallResult}</strong></div>
+      <div class="summary-card"><span>Total Rows</span><strong>${report.total_rows}</strong></div>
+      <div class="summary-card"><span>Placed Orders</span><strong>${report.placed_orders}</strong></div>
+      <div class="summary-card"><span>Failed Orders</span><strong>${report.failed_orders}</strong></div>
+    </div>
+    <p>${report.failed_orders > 0 ? `${report.failed_orders} order-flow issue(s) require review before production release.` : 'All submitted order rows completed successfully in this automation run.'}</p>
+  </section>
 
   <section class="section">
     <h2>Credentials</h2>
@@ -1719,6 +1708,11 @@ function buildHtmlReport(report) {
     </thead>
     <tbody>${hasResults ? rowTable : '<tr><td colspan="8">No execution rows available.</td></tr>'}</tbody>
   </table>
+  </section>
+
+  <section class="section">
+    <h2>Issues Found</h2>
+    ${issueSections || '<p>No issues found.</p>'}
   </section>
 
   <section class="section">
@@ -2082,13 +2076,13 @@ async function main() {
     results: results.map((item) => ({
       ...item,
       result: item.status === 'PLACED' ? 'PASS' : 'FAIL',
-      screenshotReportPath: `screenshots/${item.screenshotFileName}`,
-      screenshotPublicPath: `../uploads/order_flow_reports/${reportId}/screenshots/${item.screenshotFileName}`,
+      screenshotReportPath: item.screenshotFileName ? `screenshots/${item.screenshotFileName}` : '',
+      screenshotPublicPath: item.screenshotFileName ? `/uploads/order_flow_reports/${reportId}/screenshots/${item.screenshotFileName}` : '',
     })),
   }));
   const pdfPath = path.join(reportDir, 'report.pdf');
   const reportArtifact = await renderPdfReport(pdfPath, reportHtmlPath);
-  const reportPublicPath = `../uploads/order_flow_reports/${reportId}/${reportArtifact.generated ? 'report.pdf' : 'report.html'}`;
+  const reportPublicPath = `/uploads/order_flow_reports/${reportId}/${reportArtifact.generated ? 'report.pdf' : 'report.html'}`;
 
   if (!reportArtifact.generated && reportArtifact.error) {
     await appendRunnerLog(
@@ -2116,8 +2110,8 @@ async function main() {
     results: results.map((item) => ({
       ...item,
       result: item.status === 'PLACED' ? 'PASS' : 'FAIL',
-      screenshotReportPath: `screenshots/${item.screenshotFileName}`,
-      screenshotPublicPath: `/uploads/order_flow_reports/${reportId}/screenshots/${item.screenshotFileName}`,
+      screenshotReportPath: item.screenshotFileName ? `screenshots/${item.screenshotFileName}` : '',
+      screenshotPublicPath: item.screenshotFileName ? `/uploads/order_flow_reports/${reportId}/screenshots/${item.screenshotFileName}` : '',
     })),
   };
 

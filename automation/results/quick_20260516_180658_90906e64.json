@@ -1,0 +1,100 @@
+[
+  {
+    "label": "Quick Test Page - Form discovery",
+    "status": "PASS",
+    "detail": "forms=1",
+    "time": "2026-05-16T18:07:03.214Z",
+    "screenshot_path": "C:\\xampp\\htdocs\\testing_portal\\automation\\results\\screenshots\\1778954822686_Quick_Test_Page_form_discovery.png"
+  },
+  {
+    "label": "Quick Test Page - Form 1 field discovery",
+    "status": "PASS",
+    "detail": "fields=8",
+    "time": "2026-05-16T18:07:03.683Z",
+    "screenshot_path": "C:\\xampp\\htdocs\\testing_portal\\automation\\results\\screenshots\\1778954823378_Quick_Test_Page_form_1_fields.png"
+  },
+  {
+    "label": "Form 1 - Blank validation for firstName",
+    "status": "PASS",
+    "detail": "blank value blocked",
+    "time": "2026-05-16T18:07:04.499Z",
+    "screenshot_path": "C:\\xampp\\htdocs\\testing_portal\\automation\\results\\screenshots\\1778954824098_form_1_blank_firstName.png"
+  },
+  {
+    "label": "Form 1 - Blank validation for lastName",
+    "status": "PASS",
+    "detail": "blank value blocked",
+    "time": "2026-05-16T18:07:04.953Z",
+    "screenshot_path": "C:\\xampp\\htdocs\\testing_portal\\automation\\results\\screenshots\\1778954824544_form_1_blank_lastName.png"
+  },
+  {
+    "label": "Form 1 - Blank validation for email",
+    "status": "PASS",
+    "detail": "blank value blocked",
+    "time": "2026-05-16T18:07:05.658Z",
+    "screenshot_path": "C:\\xampp\\htdocs\\testing_portal\\automation\\results\\screenshots\\1778954824976_form_1_blank_email.png"
+  },
+  {
+    "label": "Form 1 - Blank validation for phone",
+    "status": "PASS",
+    "detail": "blank value blocked",
+    "time": "2026-05-16T18:07:06.366Z",
+    "screenshot_path": "C:\\xampp\\htdocs\\testing_portal\\automation\\results\\screenshots\\1778954825679_form_1_blank_phone.png"
+  },
+  {
+    "label": "Form 1 - Blank validation for shippingAddress1",
+    "status": "PASS",
+    "detail": "blank value blocked",
+    "time": "2026-05-16T18:07:07.044Z",
+    "screenshot_path": "C:\\xampp\\htdocs\\testing_portal\\automation\\results\\screenshots\\1778954826387_form_1_blank_shippingAddress1.png"
+  },
+  {
+    "label": "Form 1 - Blank validation for shippingCity",
+    "status": "PASS",
+    "detail": "blank value blocked",
+    "time": "2026-05-16T18:07:07.750Z",
+    "screenshot_path": "C:\\xampp\\htdocs\\testing_portal\\automation\\results\\screenshots\\1778954827066_form_1_blank_shippingCity.png"
+  },
+  {
+    "label": "Form 1 - Blank validation for shippingZip",
+    "status": "PASS",
+    "detail": "blank value blocked",
+    "time": "2026-05-16T18:07:08.321Z",
+    "screenshot_path": "C:\\xampp\\htdocs\\testing_portal\\automation\\results\\screenshots\\1778954827770_form_1_blank_shippingZip.png"
+  },
+  {
+    "label": "Form 1 - Blank validation for shippingCountry",
+    "status": "FAIL",
+    "detail": "blank value has no visible/native validation",
+    "time": "2026-05-16T18:07:08.896Z",
+    "screenshot_path": "C:\\xampp\\htdocs\\testing_portal\\automation\\results\\screenshots\\1778954828342_form_1_blank_shippingCountry.png"
+  },
+  {
+    "label": "Form 1 - Phone rejects characters for phone",
+    "status": "PASS",
+    "detail": "value=\"\"",
+    "time": "2026-05-16T18:07:09.493Z",
+    "screenshot_path": "C:\\xampp\\htdocs\\testing_portal\\automation\\results\\screenshots\\1778954828942_form_1_phone_character_phone.png"
+  },
+  {
+    "label": "Form 1 - Phone max 10 digits for phone",
+    "status": "PASS",
+    "detail": "value=\"1234567890\", digits=10",
+    "time": "2026-05-16T18:07:10.063Z",
+    "screenshot_path": "C:\\xampp\\htdocs\\testing_portal\\automation\\results\\screenshots\\1778954829549_form_1_phone_length_phone.png"
+  },
+  {
+    "label": "Form 1 - Phone rejects characters for shippingZip",
+    "status": "PASS",
+    "detail": "value=\"\"",
+    "time": "2026-05-16T18:07:10.661Z",
+    "screenshot_path": "C:\\xampp\\htdocs\\testing_portal\\automation\\results\\screenshots\\1778954830100_form_1_phone_character_shippingZip.png"
+  },
+  {
+    "label": "Form 1 - Phone max 10 digits for shippingZip",
+    "status": "PASS",
+    "detail": "value=\"12345\", digits=5",
+    "time": "2026-05-16T18:07:11.171Z",
+    "screenshot_path": "C:\\xampp\\htdocs\\testing_portal\\automation\\results\\screenshots\\1778954830686_form_1_phone_length_shippingZip.png"
+  }
+]

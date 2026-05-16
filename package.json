@@ -1,15 +1,17 @@
 {
   "name": "qa-testing-portal",
   "version": "1.0.0",
-  "description": "QA Testing POC Admin Portal with Selenium Report Management",
+  "description": "Node.js QA testing portal with Playwright automation and MySQL report storage",
   "main": "server.js",
   "type": "module",
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "order-flow": "node order_placement/run-order-flow.mjs"
+    "order-flow": "node order_placement/run-order-flow.mjs",
+    "quick-check": "node automation/form-functional-checks.mjs",
+    "check": "node --check server.js"
   },
-  "keywords": ["qA", "testing", "selenium", "reports"],
+  "keywords": ["qa", "testing", "playwright", "reports", "express"],
   "author": "",
   "license": "ISC",
   "dependencies": {

@@ -1,8 +1,0 @@
-[2026-04-07T18:57:25.838Z] Runner started for https://blowoutcarhttps://blowoutcartcollective.com/nikemind/?affid=1&state=CA&click_id=test123texpress.com/ninjaeverclad12piecestainless/?affid=1&click_id=test@123456789&state=CA
-[2026-04-07T18:57:28.565Z] Row 1: browser opened in private session for pritam.bhar+000020000@codeclouds.com.
-[2026-04-07T18:57:34.635Z] Row 1: failed with error=page.goto: net::ERR_NAME_NOT_RESOLVED at https://blowoutcarhttps//blowoutcartcollective.com/nikemind/?affid=1&state=CA&click_id=test123texpress.com/ninjaeverclad12piecestainless/?affid=1&click_id=test@123456789&state=CA
-Call log:
-[2m  - navigating to "https://blowoutcarhttps//blowoutcartcollective.com/nikemind/?affid=1&state=CA&click_id=test123texpress.com/ninjaeverclad12piecestainless/?affid=1&click_id=test@123456789&state=CA", waiting until "domcontentloaded"[22m
-.
-[2026-04-07T18:57:41.123Z] Row 1: browser session closed.
-[2026-04-07T21:17:51+02:00] PHP action: report registered in index.json for ofr_20260407_205722_3d8d6554

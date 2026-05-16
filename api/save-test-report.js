@@ -13,13 +13,13 @@ import { query } from '../config/db.js';
  */
 export async function saveTestReport(req, res) {
   try {
-    const { test_link, execution_date, pdf_path } = req.body;
+    const { test_link, execution_date, pdf_path, report_html, status } = req.body;
 
     // Validate required fields
-    if (!test_link || !execution_date || !pdf_path) {
+    if (!test_link || !execution_date || (!pdf_path && !report_html)) {
       return res.status(400).json({
         success: false,
-        error: 'Missing required fields: test_link, execution_date, pdf_path',
+        error: 'Missing required fields: test_link, execution_date, and pdf_path or report_html',
       });
     }
 
@@ -42,8 +42,8 @@ export async function saveTestReport(req, res) {
       });
     }
 
-    // Validate pdf_path is not empty
-    if (pdf_path.trim().length === 0) {
+    // Validate report path is not empty
+    if (pdf_path && pdf_path.trim().length === 0) {
       return res.status(400).json({
         success: false,
         error: 'pdf_path cannot be empty',
@@ -52,11 +52,17 @@ export async function saveTestReport(req, res) {
 
     // Insert into database
     const sqlQuery = `
-      INSERT INTO test_reports (test_link, execution_date, pdf_path)
-      VALUES (?, ?, ?)
+      INSERT INTO test_reports (test_link, execution_date, pdf_path, report_html, status)
+      VALUES (?, ?, ?, ?, ?)
     `;
 
-    const results = await query(sqlQuery, [test_link, execution_date, pdf_path]);
+    const results = await query(sqlQuery, [
+      test_link,
+      execution_date,
+      pdf_path || null,
+      report_html || null,
+      status || 'Completed',
+    ]);
 
     // Success response
     return res.status(201).json({
@@ -68,6 +74,8 @@ export async function saveTestReport(req, res) {
         test_link,
         execution_date,
         pdf_path,
+        report_html,
+        status: status || 'Completed',
       },
     });
 

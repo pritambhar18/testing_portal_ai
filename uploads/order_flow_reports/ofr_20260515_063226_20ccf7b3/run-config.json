@@ -1,0 +1,11 @@
+{
+  "reportId": "ofr_20260515_063226_20ccf7b3",
+  "offerName": "test ",
+  "baseUrl": " https://www.savesspottopmarket.com/ultimatesportsfangiftbundle/?affid=1&state=CA",
+  "browser": "chrome",
+  "headless": true,
+  "csvPath": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_reports\\ofr_20260515_063226_20ccf7b3\\input\\orders.csv",
+  "locatorsPath": "C:\\xampp\\htdocs\\testing_portal\\order_placement\\locators.json",
+  "reportDir": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_reports\\ofr_20260515_063226_20ccf7b3",
+  "stopSignalPath": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_stops\\ofr_20260515_063226_20ccf7b3.stop"
+}

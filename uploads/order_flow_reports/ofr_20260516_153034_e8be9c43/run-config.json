@@ -1,0 +1,11 @@
+{
+  "reportId": "ofr_20260516_153034_e8be9c43",
+  "offerName": "test report ",
+  "baseUrl": "https://www.savesspottopmarket.com/kohlertrashcan/?affid=1&state=AL",
+  "browser": "msedge",
+  "headless": true,
+  "csvPath": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_reports\\ofr_20260516_153034_e8be9c43\\input\\orders.csv",
+  "locatorsPath": "C:\\xampp\\htdocs\\testing_portal\\order_placement\\locators.json",
+  "reportDir": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_reports\\ofr_20260516_153034_e8be9c43",
+  "stopSignalPath": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_stops\\ofr_20260516_153034_e8be9c43.stop"
+}

@@ -1,0 +1,11 @@
+{
+  "reportId": "ofr_20260515_070425_86543613",
+  "offerName": "https://www.savesspottopmarket.com/ultimatesportsfangiftbundle/?AFFID=test&C1=testc1&C2=testc2&C3=testc3",
+  "baseUrl": "https://www.savesspottopmarket.com/ultimatesportsfangiftbundle/?AFFID=test&C1=testc1&C2=testc2&C3=testc3",
+  "browser": "chrome",
+  "headless": true,
+  "csvPath": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_reports\\ofr_20260515_070425_86543613\\input\\orders.csv",
+  "locatorsPath": "C:\\xampp\\htdocs\\testing_portal\\order_placement\\locators.json",
+  "reportDir": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_reports\\ofr_20260515_070425_86543613",
+  "stopSignalPath": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_stops\\ofr_20260515_070425_86543613.stop"
+}

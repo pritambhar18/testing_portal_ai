@@ -1,8 +1,0 @@
-[2026-03-24T13:05:38.347Z] Runner started for https://blowoutcartdirect.com/monsterenergybox/?affid=1&click_id=243hjj&click_id=test@123456&state=CAhttps://blowoutcartdirect.com/monsterenergybox/?affid=1&click_id=243hjj&click_id=test@123456&state=CA
-[2026-03-24T13:05:41.884Z] Row 1: browser opened in private session for pritam.bhar+000020000@codeclouds.com.
-[2026-03-24T13:05:43.709Z] Row 1: failed with error=page.goto: net::ERR_CERT_AUTHORITY_INVALID at https://blowoutcartdirect.com/monsterenergybox/?affid=1&click_id=243hjj&click_id=test@123456&state=CAhttps://blowoutcartdirect.com/monsterenergybox/?affid=1&click_id=243hjj&click_id=test@123456&state=CA
-Call log:
-[2m  - navigating to "https://blowoutcartdirect.com/monsterenergybox/?affid=1&click_id=243hjj&click_id=test@123456&state=CAhttps://blowoutcartdirect.com/monsterenergybox/?affid=1&click_id=243hjj&click_id=test@123456&state=CA", waiting until "domcontentloaded"[22m
-.
-[2026-03-24T13:05:45.392Z] Row 1: browser session closed.
-[2026-03-24T14:06:02+01:00] PHP action: report registered in index.json for ofr_20260324_140529_bce13987

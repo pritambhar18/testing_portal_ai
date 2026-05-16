@@ -1,0 +1,133 @@
+{
+  "id": "ofr_20260515_063226_20ccf7b3",
+  "offer_name": "test ",
+  "url": " https://www.savesspottopmarket.com/ultimatesportsfangiftbundle/?affid=1&state=CA",
+  "browser": "chrome",
+  "headless": true,
+  "created_at": "2026-05-15 12:04:24",
+  "total_rows": 1,
+  "placed_orders": 1,
+  "failed_orders": 0,
+  "report_dir": "C:\\xampp\\htdocs\\testing_portal\\uploads\\order_flow_reports\\ofr_20260515_063226_20ccf7b3",
+  "report_format": "pdf",
+  "report_error": "",
+  "securityPerformance": [
+    {
+      "label": "Security report mode",
+      "status": "MANUAL",
+      "details": "Mode=balanced, budget=180s, selected=8, skipped=3.",
+      "source": "",
+      "currentUrl": "https://www.savesspottopmarket.com/ultimatesportsfangiftbundle/?affid=1&state=CA"
+    },
+    {
+      "label": "1. HTTP2 Report Link",
+      "status": "MANUAL",
+      "details": "HTTP2 test executed and results captured on screen.",
+      "source": "<a href=\"https://tools.keycdn.com/http2-test\" target=\"_blank\" rel=\"noopener\">KeyCDN HTTP2 Test</a>",
+      "currentUrl": "https://tools.keycdn.com/http2-test",
+      "screenshotReportPath": "screenshots/01_http2.png",
+      "screenshotPublicPath": "/uploads/order_flow_reports/ofr_20260515_063226_20ccf7b3/screenshots/01_http2.png"
+    },
+    {
+      "label": "2. HTTPS Redirection Report Link",
+      "status": "MANUAL",
+      "details": "HTTPS redirection trace captured.",
+      "source": "<a href=\"https://wheregoes.com/\" target=\"_blank\" rel=\"noopener\">WhereGoes.com</a>",
+      "currentUrl": "https://wheregoes.com/trace/20262213081/",
+      "screenshotReportPath": "screenshots/02_https_redirection.png",
+      "screenshotPublicPath": "/uploads/order_flow_reports/ofr_20260515_063226_20ccf7b3/screenshots/02_https_redirection.png"
+    },
+    {
+      "label": "5. Robots.txt Report Link",
+      "status": "MANUAL",
+      "details": "robots.txt snippet: # As a condition of accessing this website, you agree to abide by the following\n# content signals:\n\n# (a)  If a Content-Signal = yes, you may collect content for the corresponding\n#      use.\n# (b)  I",
+      "source": "<a href=\"https://savesspottopmarket.com/robots.txt\" target=\"_blank\" rel=\"noopener\">robots.txt</a>",
+      "currentUrl": "https://savesspottopmarket.com/robots.txt",
+      "screenshotReportPath": "screenshots/05_robots.png",
+      "screenshotPublicPath": "/uploads/order_flow_reports/ofr_20260515_063226_20ccf7b3/screenshots/05_robots.png"
+    },
+    {
+      "label": "3a. Domain Test URL (with www)",
+      "status": "FAIL",
+      "details": "Security task failed: 3a. Domain Test URL (with www) timed out while collecting the report screenshot.",
+      "source": "<a href=\"https://www.whatsmydns.net/\" target=\"_blank\" rel=\"noopener\">WhatsMyDNS</a>",
+      "currentUrl": "https://www.whatsmydns.net/",
+      "screenshotReportPath": "screenshots/03_whatsmydns_with.png",
+      "screenshotPublicPath": "/uploads/order_flow_reports/ofr_20260515_063226_20ccf7b3/screenshots/03_whatsmydns_with.png"
+    },
+    {
+      "label": "3b. Domain Test URL (without www)",
+      "status": "FAIL",
+      "details": "Security task failed: 3b. Domain Test URL (without www) timed out while collecting the report screenshot.",
+      "source": "<a href=\"https://www.whatsmydns.net/\" target=\"_blank\" rel=\"noopener\">WhatsMyDNS</a>",
+      "currentUrl": "https://www.whatsmydns.net/",
+      "screenshotReportPath": "screenshots/03_whatsmydns_without.png",
+      "screenshotPublicPath": "/uploads/order_flow_reports/ofr_20260515_063226_20ccf7b3/screenshots/03_whatsmydns_without.png"
+    },
+    {
+      "label": "4. Safe Browsing Site Status Report Link",
+      "status": "MANUAL",
+      "details": "Safe Browsing lookup queued on Google Transparency Report.",
+      "source": "<a href=\"https://transparencyreport.google.com/safe-browsing/search\" target=\"_blank\" rel=\"noopener\">Google Transparency Report</a>",
+      "currentUrl": "https://transparencyreport.google.com/safe-browsing/search?url=https:%2F%2Fwww.savesspottopmarket.com%2Fultimatesportsfangiftbundle%2F%3Faffid%3D1%26state%3DCA&hl=en",
+      "screenshotReportPath": "screenshots/04_safe_browsing.png",
+      "screenshotPublicPath": "/uploads/order_flow_reports/ofr_20260515_063226_20ccf7b3/screenshots/04_safe_browsing.png"
+    },
+    {
+      "label": "6. Domain Expiry check Report Link",
+      "status": "FAIL",
+      "details": "Security task failed: 6. Domain Expiry check Report Link timed out while collecting the report screenshot.",
+      "source": "<a href=\"https://www.digicert.com/help/\" target=\"_blank\" rel=\"noopener\">Digicert Help</a>",
+      "currentUrl": "https://www.digicert.com/help/",
+      "screenshotReportPath": "screenshots/06_domain_expiry.png",
+      "screenshotPublicPath": "/uploads/order_flow_reports/ofr_20260515_063226_20ccf7b3/screenshots/06_domain_expiry.png"
+    },
+    {
+      "label": "10. HTML Optimisation Report Link",
+      "status": "MANUAL",
+      "details": "W3C HTML validator report queued.",
+      "source": "<a href=\"https://validator.w3.org/nu/\" target=\"_blank\" rel=\"noopener\">W3C Validator</a>",
+      "currentUrl": "https://validator.w3.org/nu/?doc=https%3A%2F%2Fwww.savesspottopmarket.com%2Fultimatesportsfangiftbundle%2F%3Faffid%3D1%26state%3DCA",
+      "screenshotReportPath": "screenshots/10_html_opt.png",
+      "screenshotPublicPath": "/uploads/order_flow_reports/ofr_20260515_063226_20ccf7b3/screenshots/10_html_opt.png"
+    },
+    {
+      "label": "7. SSL Grade Report Link",
+      "status": "SKIPPED",
+      "details": "Skipped after reaching the balanced mode task limit.",
+      "source": "<a href=\"https://www.ssllabs.com/ssltest\" target=\"_blank\" rel=\"noopener\">SSL Labs</a>",
+      "currentUrl": "https://www.ssllabs.com/ssltest"
+    },
+    {
+      "label": "8. Google PageSpeed Mobile Report Link",
+      "status": "SKIPPED",
+      "details": "Skipped after reaching the balanced mode task limit.",
+      "source": "<a href=\"https://pagespeed.web.dev/\" target=\"_blank\" rel=\"noopener\">PageSpeed Insights</a>",
+      "currentUrl": "https://pagespeed.web.dev/?utm_source=psi&utm_medium=redirect"
+    },
+    {
+      "label": "9. Google PageSpeed Desktop Report Link",
+      "status": "SKIPPED",
+      "details": "Skipped after reaching the balanced mode task limit.",
+      "source": "<a href=\"https://pagespeed.web.dev/\" target=\"_blank\" rel=\"noopener\">PageSpeed Insights</a>",
+      "currentUrl": "https://pagespeed.web.dev/report?url=https%3A%2F%2Fwww.savesspottopmarket.com%2Fultimatesportsfangiftbundle%2F%3Faffid%3D1%26state%3DCA"
+    }
+  ],
+  "view_url": "/uploads/order_flow_reports/ofr_20260515_063226_20ccf7b3/report.pdf",
+  "download_url": "/uploads/order_flow_reports/ofr_20260515_063226_20ccf7b3/report.pdf",
+  "results": [
+    {
+      "email": "pritam.bhar+000020000@codeclouds.com",
+      "orderId": "7066992",
+      "status": "PLACED",
+      "message": "Order placed successfully.",
+      "cardType": "VISA",
+      "cardLast4": "4442",
+      "screenshotFileName": "row_001_4442.png",
+      "expectation": "prepaid",
+      "result": "PASS",
+      "screenshotReportPath": "screenshots/row_001_4442.png",
+      "screenshotPublicPath": "/uploads/order_flow_reports/ofr_20260515_063226_20ccf7b3/screenshots/row_001_4442.png"
+    }
+  ]
+}

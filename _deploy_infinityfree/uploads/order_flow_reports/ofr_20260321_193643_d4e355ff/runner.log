@@ -1,8 +1,0 @@
-[2026-03-21T18:36:46.866Z] Runner started for https://blowoutcartdirect.com/dysonvacuum/?affid=1&click_id=test123&state=CA
-[2026-03-21T18:36:50.982Z] Row 1: browser opened in private session for pritam.bhar+000020000@codeclouds.com.
-[2026-03-21T18:38:44.454Z] Row 1: completed with status=PLACED, orderId=6121641, cardLast4=4442.
-[2026-03-21T18:38:46.089Z] Row 1: browser session closed.
-[2026-03-21T18:38:48.650Z] Row 2: browser opened in private session for pritam.bhar+000020001@codeclouds.com.
-[2026-03-21T18:41:42.975Z] Row 2: completed with status=PLACED, orderId=6121766, cardLast4=4446.
-[2026-03-21T18:41:46.235Z] Row 2: browser session closed.
-[2026-03-21T19:41:56+01:00] PHP action: report registered in index.json for ofr_20260321_193643_d4e355ff

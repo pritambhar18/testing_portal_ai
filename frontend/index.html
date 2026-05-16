@@ -1,108 +1,1839 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QA Testing Portal</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #333;
-        }
-        .container {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            padding: 40px;
-            max-width: 600px;
-            width: 100%;
-        }
-        h1 {
-            color: #667eea;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        p {
-            text-align: center;
-            color: #666;
-            margin-bottom: 30px;
-            line-height: 1.6;
-        }
-        .buttons {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        a {
-            display: inline-block;
-            padding: 12px 24px;
-            background: #667eea;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        a:hover {
-            background: #764ba2;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-        .secondary {
-            background: #e0e0e0;
-            color: #333;
-        }
-        .secondary:hover {
-            background: #d0d0d0;
-        }
-        .status {
-            background: #f0f4ff;
-            padding: 15px;
-            border-radius: 5px;
-            margin-top: 20px;
-            border-left: 4px solid #667eea;
-        }
-        .status-ok { color: #4caf50; }
-        .status-loading { color: #ff9800; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QA Testing Portal</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="shortcut icon" href="/favicon.svg" type="image/svg+xml">
+  <style>
+    :root {
+      color-scheme: light;
+      --page: #f5f7fb;
+      --surface: #ffffff;
+      --surface-soft: #f8fafc;
+      --ink: #111827;
+      --muted: #667085;
+      --line: #d8dee9;
+      --accent: #0f766e;
+      --accent-strong: #115e59;
+      --blue: #1d4ed8;
+      --blue-soft: #eff6ff;
+      --amber-soft: #fffbeb;
+      --danger: #b42318;
+      --danger-soft: #fff1f0;
+      --ok: #067647;
+      --warn: #b54708;
+      --shadow: 0 18px 45px rgba(16, 24, 40, 0.12);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        linear-gradient(180deg, #eef4ff 0, rgba(238, 244, 255, 0) 300px),
+        var(--page);
+      color: var(--ink);
+      font-family: Inter, "Segoe UI", Arial, Helvetica, sans-serif;
+    }
+
+    a {
+      color: var(--accent-strong);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    h1, h2, h3, p {
+      margin: 0;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .login-shell {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background:
+        linear-gradient(120deg, rgba(15, 118, 110, 0.12), transparent 36%),
+        linear-gradient(300deg, rgba(29, 78, 216, 0.10), transparent 34%),
+        #eef2f7;
+    }
+
+    .login-card {
+      width: min(520px, 100%);
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 34px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 5px;
+      background: linear-gradient(90deg, var(--accent), var(--blue));
+    }
+
+    .login-card .field {
+      margin-top: 14px;
+    }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: var(--accent);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+    }
+
+    .icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      display: inline-grid;
+      place-items: center;
+      background: #e6fffb;
+      color: var(--accent-strong);
+      font-size: 13px;
+      font-weight: 900;
+      flex: 0 0 auto;
+    }
+
+    .brand-row h1 {
+      font-size: 22px;
+      line-height: 1.2;
+    }
+
+    .brand-row p, .page-kicker, .helper-text {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .app-shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 248px 1fr;
+    }
+
+    .app-shell.sidebar-closed {
+      grid-template-columns: 0 1fr;
+    }
+
+    .sidebar {
+      background: linear-gradient(180deg, #101828, #182230);
+      color: #e5e7eb;
+      padding: 22px 16px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: hidden;
+      transition: width 0.2s ease, padding 0.2s ease;
+      box-shadow: 12px 0 32px rgba(16, 24, 40, 0.16);
+    }
+
+    .app-shell.sidebar-closed .sidebar {
+      width: 0;
+      padding-left: 0;
+      padding-right: 0;
+      border: 0;
+    }
+
+    .sidebar .brand-row {
+      margin-bottom: 28px;
+    }
+
+    .sidebar .brand-row p {
+      color: #98a2b3;
+    }
+
+    .sidebar .ghost {
+      border-color: #28364d;
+      color: #fff;
+      margin-left: auto;
+    }
+
+    .nav-stack {
+      display: grid;
+      gap: 8px;
+    }
+
+    .nav-button {
+      width: 100%;
+      justify-content: flex-start;
+      background: transparent;
+      color: #cbd5e1;
+      border: 1px solid transparent;
+      min-height: 42px;
+      padding-left: 12px;
+      border-radius: 8px;
+      transition: background .16s ease, border-color .16s ease, transform .16s ease;
+    }
+
+    .nav-button:hover,
+    .nav-button.active {
+      background: #162033;
+      border-color: #28364d;
+      color: #fff;
+      transform: translateX(2px);
+    }
+
+    .main {
+      min-width: 0;
+    }
+
+    .topbar {
+      min-height: 68px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      gap: 18px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      box-shadow: 0 1px 12px rgba(16, 24, 40, 0.05);
+    }
+
+    .topbar-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .topbar-title h2 {
+      font-size: 22px;
+    }
+
+    .content {
+      width: min(1240px, calc(100% - 48px));
+      margin: 24px auto 44px;
+    }
+
+    .page-title {
+      margin-bottom: 18px;
+    }
+
+    .page-title h2 {
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .stat-card,
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: 0 8px 24px rgba(16, 24, 40, 0.06);
+    }
+
+    .stat-card {
+      padding: 18px;
+      border-top: 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: var(--accent);
+    }
+
+    .stat-card span {
+      color: var(--muted);
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 7px;
+      text-transform: uppercase;
+    }
+
+    .stat-card strong {
+      display: block;
+      font-size: 30px;
+      line-height: 1;
+    }
+
+    .run-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .run-card {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+    }
+
+    .run-main {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .run-main strong {
+      display: block;
+      font-size: 14px;
+    }
+
+    .run-main span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 380px;
+    }
+
+    .run-card.running {
+      border-color: #fedf89;
+      background: #fffcf5;
+    }
+
+    .run-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: #98a2b3;
+      box-shadow: 0 0 0 4px rgba(152, 162, 179, 0.15);
+    }
+
+    .run-card.running .run-dot {
+      background: var(--warn);
+      box-shadow: 0 0 0 4px rgba(181, 71, 8, 0.15);
+    }
+
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: 440px 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .workspace-grid.single {
+      grid-template-columns: minmax(420px, 1.2fr) minmax(280px, 0.8fr);
+    }
+
+    .order-side {
+      display: grid;
+      gap: 14px;
+    }
+
+    .setup-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .setup-item {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fff;
+    }
+
+    .setup-item span {
+      color: var(--muted);
+      display: block;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .02em;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    .setup-item strong {
+      display: block;
+      font-size: 14px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .panel {
+      margin-bottom: 18px;
+      overflow: hidden;
+      transition: box-shadow .18s ease, border-color .18s ease;
+    }
+
+    .panel:hover,
+    .stat-card:hover {
+      border-color: #bfd0e6;
+      box-shadow: var(--shadow);
+    }
+
+    .panel-header {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      background: var(--surface-soft);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .panel-header h3 {
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .panel-body {
+      padding: 18px;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .field {
+      min-width: 0;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      color: #344054;
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      font: inherit;
+      min-height: 40px;
+      padding: 10px 11px;
+      transition: border-color .16s ease, box-shadow .16s ease;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus,
+    button:focus-visible,
+    .action-link:focus-visible {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.14);
+      outline: none;
+    }
+
+    button:focus:not(:focus-visible),
+    .action-link:focus:not(:focus-visible) {
+      outline: none;
+    }
+
+    input[type="file"] {
+      padding: 8px 10px;
+    }
+
+    textarea {
+      min-height: 112px;
+      resize: vertical;
+    }
+
+    .csv-editor.file-loaded textarea {
+      display: none;
+    }
+
+    .csv-drop {
+      border: 1px dashed #9aa8bd;
+      background: #fbfcff;
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+
+    .csv-drop input {
+      background: transparent;
+      border: 0;
+      padding: 0;
+      min-height: auto;
+    }
+
+    .csv-preview {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      margin-top: 12px;
+      max-height: 220px;
+      overflow: auto;
+    }
+
+    .csv-preview table {
+      min-width: 720px;
+    }
+
+    .csv-preview th,
+    .csv-preview td {
+      padding: 8px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .csv-preview tbody tr:nth-child(even) {
+      background: #fbfcff;
+    }
+
+    button,
+    .action-link {
+      border: 0;
+      border-radius: 8px;
+      background: var(--accent);
+      color: #fff;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      min-height: 38px;
+      padding: 9px 13px;
+      font: inherit;
+      font-weight: 700;
+      text-decoration: none;
+      white-space: nowrap;
+      box-shadow: 0 1px 2px rgba(16, 24, 40, 0.08);
+      transition: transform .15s ease, background .15s ease, box-shadow .15s ease;
+    }
+
+    button:hover,
+    .action-link:hover {
+      background: var(--accent-strong);
+      text-decoration: none;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 18px rgba(15, 118, 110, 0.18);
+    }
+
+    button.secondary,
+    .action-link.secondary {
+      background: #344054;
+    }
+
+    button.light,
+    .action-link.light {
+      background: var(--blue-soft);
+      color: var(--blue);
+    }
+
+    button.danger {
+      background: var(--danger);
+    }
+
+    button.ghost {
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--ink);
+    }
+
+    button:disabled {
+      background: #98a2b3;
+      cursor: wait;
+    }
+
+    .checkbox-row {
+      align-items: center;
+      display: flex;
+      gap: 10px;
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 9px 11px;
+      background: #fff;
+    }
+
+    .checkbox-row input {
+      width: 16px;
+      min-height: 16px;
+      margin: 0;
+    }
+
+    .checkbox-row label {
+      margin: 0;
+    }
+
+    .active-run-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .active-run-item {
+      align-items: center;
+      background: #fffcf5;
+      border: 1px solid #fedf89;
+      border-radius: var(--radius);
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px;
+    }
+
+    .tooltip {
+      cursor: help;
+      border-bottom: 1px dotted currentColor;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .message {
+      border-radius: 6px;
+      padding: 11px 13px;
+      margin-bottom: 16px;
+      font-size: 14px;
+      background: #eef6ff;
+      color: #1849a9;
+      border: 1px solid #b2ddff;
+      position: sticky;
+      top: 12px;
+      z-index: 20;
+    }
+
+    .message.error {
+      background: var(--danger-soft);
+      color: var(--danger);
+      border-color: #fecdca;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      background: var(--surface-soft);
+      text-transform: uppercase;
+    }
+
+    tbody tr:hover td {
+      background: #fbfdff;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .badge {
+      border-radius: 999px;
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 4px 9px;
+      background: #ecfdf3;
+      color: var(--ok);
+    }
+
+    .badge.failed {
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+
+    .badge.running {
+      background: #fffaeb;
+      color: var(--warn);
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .actions .action-link,
+    .actions button {
+      min-height: 34px;
+      width: 34px;
+      padding: 0;
+      font-size: 13px;
+      transition: transform .15s ease, background .15s ease;
+    }
+
+    .icon-button {
+      min-height: 36px;
+      width: 36px;
+      padding: 0;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    .text-clip {
+      display: inline-block;
+      max-width: 320px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      vertical-align: bottom;
+      white-space: nowrap;
+    }
+
+    .meta-cell {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .count-pills {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+
+    .count-pill {
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 8px;
+      background: #eef4ff;
+      color: var(--blue);
+    }
+
+    .count-pill.fail {
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+
+    .toast-stack {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      display: grid;
+      gap: 10px;
+      width: min(420px, calc(100% - 36px));
+      z-index: 50;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--accent);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+      pointer-events: auto;
+      min-width: 0;
+    }
+
+    .toast p {
+      font-size: 14px;
+      line-height: 1.4;
+      overflow-wrap: anywhere;
+    }
+
+    .toast-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .toast-actions .action-link,
+    .toast-actions button {
+      width: auto;
+      min-height: 34px;
+      padding: 7px 10px;
+    }
+
+    .quick-results {
+      max-height: 360px;
+      overflow: auto;
+    }
+
+    .section-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .empty-cell {
+      color: var(--muted);
+      text-align: center;
+    }
+
+    @media (max-width: 980px) {
+      .app-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .app-shell.sidebar-closed {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: static;
+        height: auto;
+      }
+
+      .app-shell.sidebar-closed .sidebar {
+        display: none;
+      }
+
+      .nav-stack {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .stats-grid,
+      .workspace-grid,
+      .workspace-grid.single,
+      .field-grid,
+      .run-strip {
+        grid-template-columns: 1fr;
+      }
+
+      .content {
+        width: min(100% - 28px, 1240px);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .topbar {
+        height: auto;
+        padding: 16px;
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .nav-stack {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🧪 QA Testing Portal</h1>
-        <p>Welcome to the automated testing and order flow management system.</p>
-        
-        <div class="buttons">
-            <a href="/view-reports">📊 View Reports</a>
-            <a href="/api/health" class="secondary">🔍 API Status</a>
+  <section id="loginPanel" class="login-shell">
+    <div class="login-card">
+      <div class="brand-row">
+        <div class="brand-mark">QA</div>
+        <div>
+          <h1>QA Testing Portal</h1>
+          <p>Secure automation reports and quick validation</p>
         </div>
-
-        <div class="status">
-            <p><strong>System Status:</strong></p>
-            <p class="status-loading" id="status">Checking server...</p>
+      </div>
+      <div id="loginMessage" class="message hidden"></div>
+      <form id="loginForm">
+        <div class="field">
+          <label for="email">Work Email</label>
+          <input id="email" name="email" type="email" autocomplete="email" placeholder="name@company.com" required autofocus>
         </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Enter your password" required>
+        </div>
+        <div class="button-row">
+          <button type="submit" title="Sign in to open the QA workspace">Sign in</button>
+        </div>
+      </form>
     </div>
+  </section>
 
-    <script>
-        // Check API health
-        fetch('/api/health')
-            .then(r => r.json())
-            .then(data => {
-                const statusEl = document.getElementById('status');
-                statusEl.className = 'status-ok';
-                statusEl.textContent = '✅ Server is running and ready!';
-            })
-            .catch(() => {
-                const statusEl = document.getElementById('status');
-                statusEl.className = 'status-loading';
-                statusEl.textContent = '⚠️ Unable to connect to API';
-            });
-    </script>
+  <section id="appPanel" class="app-shell hidden">
+    <aside class="sidebar">
+      <div class="brand-row">
+        <div class="brand-mark">QA</div>
+        <div>
+          <h1 style="font-size: 18px;">Testing Portal</h1>
+          <p id="sessionLabel">Signed in</p>
+        </div>
+        <button id="closeSidebar" class="ghost icon-button" type="button" title="Close sidebar" aria-label="Close sidebar">&times;</button>
+      </div>
+      <nav class="nav-stack" aria-label="Portal sections">
+        <button class="nav-button active" type="button" data-section="dashboardSection">Dashboard</button>
+        <button class="nav-button" type="button" data-section="orderSection">88startech</button>
+        <button class="nav-button" type="button" data-section="quickSection">Quick Checks</button>
+        <button class="nav-button" type="button" data-section="reportsSection">All Reports</button>
+      </nav>
+    </aside>
+
+    <div class="main">
+      <header class="topbar">
+        <div class="topbar-title">
+          <button id="toggleSidebar" class="ghost icon-button" type="button" title="Open or close sidebar" aria-label="Open or close sidebar">&#9776;</button>
+          <div>
+            <p class="page-kicker">Production QA workspace</p>
+            <h2 id="currentSectionTitle">Dashboard</h2>
+          </div>
+        </div>
+        <div class="button-row" style="margin-top: 0;">
+          <button id="logoutButton" class="secondary" type="button">Sign out</button>
+        </div>
+      </header>
+
+      <main class="content">
+        <div id="appMessage" class="message hidden"></div>
+        <div id="runStrip" class="run-strip hidden"></div>
+        <div id="toastStack" class="toast-stack"></div>
+
+        <section id="dashboardSection" class="portal-section">
+          <div class="page-title">
+            <p class="helper-text">Track automation runs, generated reports, and quick validation results.</p>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <span>Total Reports</span>
+              <strong id="reportCount">0</strong>
+            </div>
+            <div class="stat-card">
+              <span>88startech Reports</span>
+              <strong id="orderCount">0</strong>
+            </div>
+            <div class="stat-card">
+              <span>Quick Check Reports</span>
+              <strong id="quickCount">0</strong>
+            </div>
+            <div class="stat-card">
+              <span>Latest Status</span>
+              <strong id="latestStatus">-</strong>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-header">
+              <h3><span class="icon">RN</span> Active Runs</h3>
+            </div>
+            <div class="panel-body">
+              <div id="activeRunsBody" class="active-run-list">
+                <p class="helper-text">No active runs.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <h3><span class="icon">RP</span> Latest Reports</h3>
+            </div>
+            <div class="panel-body table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Type</th>
+                    <th>Offer / URL</th>
+                    <th>Status</th>
+                    <th>Result</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="latestReportsBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section id="orderSection" class="portal-section hidden">
+          <div class="page-title">
+            <p class="helper-text">Upload an order CSV, run the Playwright flow, then review generated reports.</p>
+          </div>
+          <div class="workspace-grid single">
+            <section class="panel">
+              <div class="panel-header">
+                <h3><span class="icon">88</span> Run Automation</h3>
+              </div>
+              <div class="panel-body">
+                <form id="automationForm">
+                  <div class="field-grid">
+                    <div class="field full">
+                      <label for="baseUrl">Test URL</label>
+                      <input id="baseUrl" name="baseUrl" type="url" placeholder="https://example.com" required>
+                    </div>
+                    <div class="field">
+                      <label for="offerName">Offer Name</label>
+                      <input id="offerName" name="offerName" type="text" placeholder="e.g. 88startech" required>
+                    </div>
+                    <div class="field">
+                      <label for="browser">Browser</label>
+                      <select id="browser" name="browser" required>
+                        <option value="" disabled selected hidden>Select a browser</option>
+                        <option value="chromium">Chromium</option>
+                        <option value="chrome">Chrome</option>
+                        <option value="msedge">Edge</option>
+                        <option value="firefox">Firefox</option>
+                        <option value="webkit">WebKit</option>
+                      </select>
+                    </div>
+                    <div class="field full">
+                      <div class="checkbox-row" title="Checked runs the browser in the background. Unchecked opens a visible browser on supported local machines.">
+                        <input id="headlessMode" name="headlessMode" type="checkbox" checked>
+                        <label for="headlessMode">Run in headless mode</label>
+                      </div>
+                      <p class="helper-text" style="margin-top: 7px;">Turn this off only when you want to watch the local browser run.</p>
+                    </div>
+                    <div class="field full">
+                      <label for="csvFile">Upload Orders CSV</label>
+                      <div class="csv-drop">
+                        <input id="csvFile" name="csvFile" type="file" accept=".csv,text/csv">
+                        <p id="csvFileName" class="helper-text" style="margin-top: 9px;">No CSV selected.</p>
+                      </div>
+                    </div>
+                    <div class="field full csv-editor" id="csvEditor">
+                      <label for="csvContent">CSV Header or Manual CSV</label>
+                      <textarea id="csvContent" name="csvContent" placeholder="first name,lname,phone number,email,address,city,zipcode,card number"></textarea>
+                      <div id="csvPreview" class="csv-preview hidden"></div>
+                    </div>
+                  </div>
+                  <div class="button-row">
+                    <button id="runOrderButton" type="submit" title="Start the order-flow automation">Run flow</button>
+                  </div>
+                </form>
+              </div>
+            </section>
+            <aside class="order-side">
+              <section class="panel">
+                <div class="panel-header">
+                  <h3><span class="icon">ST</span> Run Setup</h3>
+                </div>
+                <div class="panel-body setup-list">
+                  <div class="setup-item">
+                    <span>CSV</span>
+                    <strong id="setupCsv" title="No CSV selected">No CSV selected</strong>
+                  </div>
+                  <div class="setup-item">
+                    <span>Browser</span>
+                    <strong id="setupBrowser" title="Select a browser">Select a browser</strong>
+                  </div>
+                  <div class="setup-item">
+                    <span>Mode</span>
+                    <strong id="setupMode" title="Headless">Headless</strong>
+                  </div>
+                  <div class="setup-item">
+                    <span>Status</span>
+                    <strong id="setupStatus" title="Ready">Ready</strong>
+                  </div>
+                </div>
+              </section>
+            </aside>
+          </div>
+
+          <section class="panel">
+            <div class="panel-header">
+              <h3><span class="icon">PDF</span> 88startech Reports</h3>
+            </div>
+            <div class="panel-body table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Offer / URL</th>
+                    <th>Browser</th>
+                    <th>Status</th>
+                    <th>Result</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="orderReportsBody"></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <section id="quickSection" class="portal-section hidden">
+          <div class="page-title">
+            <p class="helper-text">Run quick form validation checks and review their report output separately.</p>
+          </div>
+          <div class="workspace-grid">
+            <section class="panel">
+              <div class="panel-header">
+                <h3><span class="icon">QC</span> Run Quick Check</h3>
+              </div>
+              <div class="panel-body">
+                <form id="quickForm">
+                  <div class="field">
+                    <label for="quickUrl">Page URL</label>
+                    <input id="quickUrl" name="quickUrl" type="url" placeholder="https://example.com" required>
+                  </div>
+                  <div class="button-row">
+                    <button id="runQuickButton" type="submit">Run quick check</button>
+                  </div>
+                </form>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-header">
+                <h3><span class="icon">RS</span> Latest Quick Check Results</h3>
+              </div>
+              <div class="panel-body quick-results table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Status</th>
+                      <th>Check</th>
+                      <th>Detail</th>
+                    </tr>
+                  </thead>
+                  <tbody id="quickBody">
+                    <tr><td class="empty-cell" colspan="3">Run a quick check to see results.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+
+          <section class="panel">
+            <div class="panel-header">
+              <h3><span class="icon">PDF</span> Quick Check Reports</h3>
+            </div>
+            <div class="panel-body table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Offer / URL</th>
+                    <th>Status</th>
+                    <th>Result</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="quickReportsBody"></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <section id="reportsSection" class="portal-section hidden">
+          <div class="page-title">
+            <p class="helper-text">View, download, or delete reports generated by any automation section.</p>
+          </div>
+          <section class="panel">
+            <div class="panel-header">
+              <h3><span class="icon">LB</span> Report Library</h3>
+            </div>
+            <div class="panel-body table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Type</th>
+                    <th>Offer / URL</th>
+                    <th>Status</th>
+                    <th>Result</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="allReportsBody"></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+  </section>
+
+  <script>
+    const tokenKey = 'qa_portal_token';
+    const userKey = 'qa_portal_user';
+    const state = {
+      token: localStorage.getItem(tokenKey),
+      user: JSON.parse(localStorage.getItem(userKey) || 'null'),
+      reports: [],
+      runs: [],
+      notifiedRuns: new Set(JSON.parse(sessionStorage.getItem('qa_portal_notified_runs') || '[]')),
+    };
+
+    const sections = {
+      dashboardSection: 'Dashboard',
+      orderSection: '88startech',
+      quickSection: 'Quick Checks',
+      reportsSection: 'All Reports',
+    };
+
+    const loginPanel = document.getElementById('loginPanel');
+    const appPanel = document.getElementById('appPanel');
+    const loginMessage = document.getElementById('loginMessage');
+    const appMessage = document.getElementById('appMessage');
+    const sessionLabel = document.getElementById('sessionLabel');
+    const toastStack = document.getElementById('toastStack');
+    const csvEditor = document.getElementById('csvEditor');
+    const setupCsv = document.getElementById('setupCsv');
+    const setupBrowser = document.getElementById('setupBrowser');
+    const setupMode = document.getElementById('setupMode');
+    const setupStatus = document.getElementById('setupStatus');
+
+    function setMessage(node, message, isError = false) {
+      node.textContent = message;
+      node.classList.toggle('hidden', !message);
+      node.classList.toggle('error', Boolean(isError));
+      if (message && isError) {
+        showToast(message);
+      }
+    }
+
+    function showToast(message, action = null) {
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.innerHTML = `
+        <p>${safeText(message)}</p>
+        <div class="toast-actions">
+          ${action?.href ? `<a class="action-link light" href="${safeText(action.href)}" target="_blank" rel="noreferrer">${safeText(action.label || 'View')}</a>` : ''}
+          <button class="ghost" type="button" title="Close notification">Close</button>
+        </div>
+      `;
+      toast.querySelector('button').addEventListener('click', () => toast.remove());
+      toastStack.appendChild(toast);
+      setTimeout(() => toast.remove(), 12000);
+      notifyUser(message, action);
+    }
+
+    function notifyUser(message, action = null) {
+      if (!('Notification' in window) || Notification.permission !== 'granted' || !document.hidden) {
+        return;
+      }
+      const notification = new Notification('QA Testing Portal', {
+        body: message,
+        icon: '/favicon.svg',
+      });
+      if (action?.href) {
+        notification.onclick = () => {
+          window.focus();
+          window.open(action.href, '_blank', 'noopener');
+        };
+      }
+    }
+
+    function requestNotificationPermission() {
+      if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission().catch(() => {});
+      }
+    }
+
+    function authHeaders(contentType = 'application/json') {
+      const headers = { Authorization: `Bearer ${state.token}` };
+      if (contentType) headers['Content-Type'] = contentType;
+      return headers;
+    }
+
+    async function api(path, options = {}) {
+      const response = await fetch(path, {
+        ...options,
+        headers: {
+          ...(state.token ? authHeaders(options.contentType) : { 'Content-Type': 'application/json' }),
+          ...(options.headers || {}),
+        },
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok || payload.success === false) {
+        throw new Error(payload.error || `Request failed: ${response.status}`);
+      }
+      return payload;
+    }
+
+    function renderSession() {
+      const signedIn = Boolean(state.token);
+      loginPanel.classList.toggle('hidden', signedIn);
+      appPanel.classList.toggle('hidden', !signedIn);
+      sessionLabel.textContent = signedIn
+        ? `${state.user?.name || state.user?.email || 'Signed in'}`
+        : 'Signed out';
+    }
+
+    function showSection(sectionId) {
+      document.querySelectorAll('.portal-section').forEach((section) => {
+        section.classList.toggle('hidden', section.id !== sectionId);
+      });
+      document.querySelectorAll('.nav-button').forEach((button) => {
+        button.classList.toggle('active', button.dataset.section === sectionId);
+      });
+      document.getElementById('currentSectionTitle').textContent = sections[sectionId] || 'Dashboard';
+    }
+
+    function formatDate(value) {
+      if (!value) return '-';
+      return new Date(value).toLocaleString();
+    }
+
+    function statusClass(status) {
+      const value = String(status || '').toLowerCase();
+      if (value.includes('fail')) return 'failed';
+      if (value.includes('run') || value.includes('pending')) return 'running';
+      return '';
+    }
+
+    function safeText(value) {
+      return String(value ?? '').replace(/[&<>"']/g, (char) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;',
+      }[char]));
+    }
+
+    function normalizeLink(value) {
+      if (!value) return '';
+      const link = String(value).replace(/^(\.\.\/)+/, '/');
+      return link.startsWith('/') || link.startsWith('http') ? link : `/${link}`;
+    }
+
+    function reportLink(report) {
+      return `/reports/${report.id}`;
+    }
+
+    function reportDownloadLink(report) {
+      return `/reports/${report.id}/download`;
+    }
+
+    function reportType(report) {
+      if (report.report_type) return report.report_type;
+      const link = `${report.report_html || ''} ${report.pdf_path || ''}`.toLowerCase();
+      return link.includes('/automation/results/') ? 'Quick Check' : '88startech';
+    }
+
+    function runTypeLabel(run) {
+      return run.type === 'quick-check' ? 'Quick Check' : '88startech';
+    }
+
+    function isRunning(status) {
+      return String(status || '').toLowerCase() === 'running';
+    }
+
+    function runningRun(type) {
+      return state.runs.find((run) => run.type === type && isRunning(run.status));
+    }
+
+    function renderResultCounts(report) {
+      const pass = Number.isFinite(Number(report.pass_count)) ? Number(report.pass_count) : null;
+      const fail = Number.isFinite(Number(report.fail_count)) ? Number(report.fail_count) : null;
+      if (pass === null && fail === null) return '-';
+      return `
+        <div class="count-pills">
+          <span class="count-pill">Pass ${pass ?? 0}</span>
+          <span class="count-pill fail">Fail ${fail ?? 0}</span>
+        </div>
+      `;
+    }
+
+    function resetAutomationForm() {
+      const form = document.getElementById('automationForm');
+      form.reset();
+      document.getElementById('csvFile').value = '';
+      document.getElementById('csvFileName').textContent = 'No CSV selected.';
+      document.getElementById('csvContent').value = '';
+      document.getElementById('csvPreview').innerHTML = '';
+      document.getElementById('csvPreview').classList.add('hidden');
+      csvEditor.classList.remove('file-loaded');
+      updateSetupSummary();
+    }
+
+    function reportTitleCell(report) {
+      const type = reportType(report);
+      const offer = report.offer_name || type;
+      const url = report.test_link || '';
+      return `
+        <td>
+          <div title="${safeText(offer)}"><strong class="text-clip">${safeText(offer)}</strong></div>
+          ${url ? `<a class="text-clip" href="${safeText(url)}" target="_blank" rel="noreferrer" title="${safeText(url)}">${safeText(url)}</a>` : '-'}
+        </td>
+      `;
+    }
+
+    function renderRows(targetId, reports, includeType = false) {
+      const body = document.getElementById(targetId);
+      if (!reports.length) {
+        const count = targetId === 'orderReportsBody' ? 7 : includeType ? 7 : 6;
+        body.innerHTML = `<tr><td class="empty-cell" colspan="${count}">No reports available.</td></tr>`;
+        return;
+      }
+
+      body.innerHTML = reports.map((report) => {
+        const view = reportLink(report);
+        const download = reportDownloadLink(report);
+        const typeCell = includeType ? `<td>${safeText(reportType(report))}</td>` : '';
+        const browserCell = targetId === 'orderReportsBody'
+          ? `<td title="${safeText(report.browser_name || '-')}">${safeText(report.browser_name || '-')}</td>`
+          : '';
+        return `
+          <tr>
+            <td>#${report.id}</td>
+            ${typeCell}
+            ${reportTitleCell(report)}
+            ${browserCell}
+            <td><span class="badge ${statusClass(report.status)}">${safeText(report.status || 'Completed')}</span></td>
+            <td>${renderResultCounts(report)}</td>
+            <td>${formatDate(report.created_at || report.execution_date)}</td>
+            <td>
+              <div class="actions">
+                ${view ? `<a class="action-link light" href="${safeText(view)}" target="_blank" rel="noreferrer" title="View report" aria-label="View report">&#128065;</a>` : ''}
+                ${download ? `<a class="action-link secondary" href="${safeText(download)}" download title="Download report" aria-label="Download report">&#8681;</a>` : ''}
+                <button class="danger" type="button" data-delete-report="${report.id}" title="Delete report" aria-label="Delete report">&#128465;</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderReports() {
+      const orderReports = state.reports.filter((report) => reportType(report) === '88startech');
+      const quickReports = state.reports.filter((report) => reportType(report) === 'Quick Check');
+      document.getElementById('reportCount').textContent = state.reports.length;
+      document.getElementById('orderCount').textContent = orderReports.length;
+      document.getElementById('quickCount').textContent = quickReports.length;
+      document.getElementById('latestStatus').textContent = state.reports[0]?.status || '-';
+
+      renderRows('latestReportsBody', state.reports.slice(0, 8), true);
+      renderRows('orderReportsBody', orderReports, false);
+      renderRows('quickReportsBody', quickReports, false);
+      renderRows('allReportsBody', state.reports, true);
+    }
+
+    function renderRuns() {
+      const runningRuns = state.runs.filter((run) => isRunning(run.status));
+      const quickRun = runningRuns.find((run) => run.type === 'quick-check');
+      const strip = document.getElementById('runStrip');
+      const orderRunning = Boolean(runningRun('order-flow'));
+      const quickRunning = Boolean(runningRun('quick-check'));
+
+      strip.classList.toggle('hidden', runningRuns.length === 0);
+      strip.innerHTML = runningRuns.map((run) => `
+        <div class="run-card running">
+          <div class="run-main">
+            <div class="run-dot"></div>
+            <div>
+              <strong>${runTypeLabel(run)} running</strong>
+              <span>${safeText(run.input_url || run.message || run.run_id)}</span>
+            </div>
+          </div>
+          <button class="danger" type="button" data-stop-run="${run.run_id}" title="Stop this run">Stop</button>
+        </div>
+      `).join('');
+
+      document.title = runningRuns.length
+        ? `(${runningRuns.length}) QA Testing Portal`
+        : 'QA Testing Portal';
+
+      document.getElementById('activeRunsBody').innerHTML = runningRuns.length
+        ? runningRuns.map((run) => `
+          <div class="active-run-item">
+            <div class="run-main">
+              <div class="run-dot"></div>
+              <div>
+                <strong>${runTypeLabel(run)} is running</strong>
+                <span>${safeText(run.input_url || run.message || run.run_id)}</span>
+              </div>
+            </div>
+            <button class="danger" type="button" data-stop-run="${run.run_id}" title="Stop this run">Stop</button>
+          </div>
+        `).join('')
+        : '<p class="helper-text">No active runs.</p>';
+
+      document.getElementById('runOrderButton').disabled = orderRunning;
+      document.getElementById('runOrderButton').textContent = orderRunning ? 'Run in progress' : 'Run flow';
+      document.getElementById('runQuickButton').disabled = quickRunning;
+      document.getElementById('runQuickButton').textContent = quickRunning ? 'Run in progress' : 'Run quick check';
+      setupStatus.textContent = orderRunning ? '88startech running' : 'Ready';
+      setupStatus.title = setupStatus.textContent;
+
+      const latestQuick = state.runs.find((run) => run.type === 'quick-check' && Array.isArray(run.data));
+      if (latestQuick) {
+        document.getElementById('quickBody').innerHTML = latestQuick.data.map((item) => `
+          <tr>
+            <td><span class="badge ${statusClass(item.status)}">${safeText(item.status)}</span></td>
+            <td><span class="text-clip" title="${safeText(item.label || '-')}">${safeText(item.label || '-')}</span></td>
+            <td><span class="text-clip" title="${safeText(item.detail || '-')}">${safeText(item.detail || '-')}</span></td>
+          </tr>
+        `).join('') || '<tr><td class="empty-cell" colspan="3">No quick check rows returned.</td></tr>';
+      } else if (quickRun) {
+        document.getElementById('quickBody').innerHTML = '<tr><td class="empty-cell" colspan="3">Quick check is running.</td></tr>';
+      }
+    }
+
+    async function loadReports() {
+      const data = await api('/api/reports');
+      state.reports = data.data || [];
+      renderReports();
+    }
+
+    async function loadRuns() {
+      const previousRunningIds = new Set(state.runs.filter((run) => isRunning(run.status)).map((run) => run.run_id));
+      const data = await api('/api/runs');
+      state.runs = data.data || [];
+      renderRuns();
+      state.runs
+        .filter((run) => previousRunningIds.has(run.run_id) && !isRunning(run.status) && !state.notifiedRuns.has(run.run_id))
+        .forEach((run) => {
+          state.notifiedRuns.add(run.run_id);
+          sessionStorage.setItem('qa_portal_notified_runs', JSON.stringify(Array.from(state.notifiedRuns)));
+          const view = normalizeLink(run.report_path || run.html_path || run.pdf_path || '');
+          const viewHref = run.report_db_id ? `/reports/${run.report_db_id}` : view;
+          showToast(`${runTypeLabel(run)} test completed for ${run.input_url || run.run_id}.`, viewHref ? { href: viewHref, label: 'View' } : null);
+          if (run.type === 'order-flow') {
+            resetAutomationForm();
+          }
+        });
+      if (state.runs.some((run) => !isRunning(run.status))) {
+        await loadReports().catch(() => {});
+      }
+    }
+
+    async function readCsvFile(file) {
+      if (!file) return '';
+      return await file.text();
+    }
+
+    function parseCsvPreview(csv) {
+      return String(csv || '')
+        .trim()
+        .split(/\r?\n/)
+        .filter(Boolean)
+        .slice(0, 7)
+        .map((line) => {
+          const cells = [];
+          let current = '';
+          let quoted = false;
+          for (let index = 0; index < line.length; index += 1) {
+            const char = line[index];
+            if (char === '"') {
+              quoted = !quoted;
+              continue;
+            }
+            if (char === ',' && !quoted) {
+              cells.push(current.trim());
+              current = '';
+              continue;
+            }
+            current += char;
+          }
+          cells.push(current.trim());
+          return cells;
+        });
+    }
+
+    function validateOrderCsv(csv) {
+      const rows = parseCsvPreview(csv);
+      if (rows.length < 2) {
+        throw new Error('CSV must include a header row and at least one order row.');
+      }
+      const headers = rows[0].map((item) => item.toLowerCase().replace(/[^a-z0-9]+/g, ''));
+      const required = ['firstname', 'lname', 'phonenumber', 'city', 'zipcode', 'cardnumber'];
+      const missing = required.filter((item) => !headers.includes(item));
+      if (missing.length) {
+        throw new Error(`CSV is missing required column(s): ${missing.join(', ')}`);
+      }
+    }
+
+    function renderCsvPreview(csv) {
+      const rows = parseCsvPreview(csv);
+      const preview = document.getElementById('csvPreview');
+      preview.classList.toggle('hidden', rows.length === 0);
+      if (rows.length === 0) {
+        preview.innerHTML = '';
+        return;
+      }
+      const headers = rows[0] || [];
+      preview.innerHTML = `
+        <table>
+          <thead><tr>${headers.map((header) => `<th>${safeText(header)}</th>`).join('')}</tr></thead>
+          <tbody>
+            ${rows.slice(1, 6).map((row) => `<tr>${headers.map((_, index) => `<td>${safeText(row[index] || '')}</td>`).join('')}</tr>`).join('')}
+          </tbody>
+        </table>
+      `;
+    }
+
+    function updateSetupSummary() {
+      const file = document.getElementById('csvFile').files?.[0];
+      const browser = document.getElementById('browser');
+      const mode = document.getElementById('headlessMode').checked ? 'Headless' : 'Headed';
+      const csvLabel = file ? file.name : 'Manual CSV';
+      setupCsv.textContent = csvLabel;
+      setupCsv.title = csvLabel;
+      setupBrowser.textContent = browser.selectedOptions[0]?.textContent || 'Select a browser';
+      setupBrowser.title = setupBrowser.textContent;
+      setupMode.textContent = mode;
+      setupMode.title = mode;
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      setMessage(loginMessage, '');
+      const form = new FormData(event.currentTarget);
+      const button = event.submitter;
+      button.disabled = true;
+      const originalText = button.textContent;
+      button.textContent = 'Signing in...';
+      try {
+        const data = await api('/api/login', {
+          method: 'POST',
+          body: JSON.stringify({
+            email: form.get('email'),
+            password: form.get('password'),
+          }),
+        });
+        state.token = data.token;
+        state.user = data.user;
+        localStorage.setItem(tokenKey, state.token);
+        localStorage.setItem(userKey, JSON.stringify(state.user));
+        requestNotificationPermission();
+        renderSession();
+        await Promise.all([loadReports(), loadRuns()]);
+      } catch (error) {
+        setMessage(loginMessage, error.message, true);
+      } finally {
+        button.disabled = false;
+        button.textContent = originalText;
+      }
+    });
+
+    document.getElementById('csvFile').addEventListener('change', async (event) => {
+      const file = event.target.files?.[0];
+      document.getElementById('csvFileName').textContent = file ? `${file.name} selected` : 'No CSV selected.';
+      if (file) {
+        const csv = await readCsvFile(file);
+        document.getElementById('csvContent').value = csv;
+        csvEditor.classList.add('file-loaded');
+        renderCsvPreview(csv);
+      } else {
+        csvEditor.classList.remove('file-loaded');
+      }
+      updateSetupSummary();
+    });
+
+    document.getElementById('csvContent').addEventListener('input', (event) => {
+      if (!document.getElementById('csvFile').files?.[0]) {
+        csvEditor.classList.remove('file-loaded');
+      }
+      renderCsvPreview(event.target.value);
+      updateSetupSummary();
+    });
+
+    document.getElementById('browser').addEventListener('change', updateSetupSummary);
+    document.getElementById('headlessMode').addEventListener('change', updateSetupSummary);
+
+    document.getElementById('automationForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (runningRun('order-flow')) {
+        setMessage(appMessage, '88startech automation is already running. Stop it or wait for it to finish before starting another 88startech run.', true);
+        return;
+      }
+      const button = event.submitter;
+      button.disabled = true;
+      const originalText = button.textContent;
+      button.textContent = 'Starting...';
+      setMessage(appMessage, '');
+      requestNotificationPermission();
+      showToast('88startech automation started.');
+      const form = new FormData(event.currentTarget);
+      const file = document.getElementById('csvFile').files?.[0];
+      try {
+        const csvContent = file ? await readCsvFile(file) : form.get('csvContent');
+        if (!csvContent || !String(csvContent).trim()) {
+          throw new Error('Upload a CSV file or paste CSV content before running automation.');
+        }
+        validateOrderCsv(csvContent);
+        const data = await api('/api/run-automation', {
+          method: 'POST',
+          body: JSON.stringify({
+            baseUrl: form.get('baseUrl'),
+            offerName: form.get('offerName'),
+            browser: form.get('browser'),
+            csvContent,
+            headless: Boolean(form.get('headlessMode')),
+          }),
+        });
+        showToast('88startech automation is running.');
+        await loadRuns();
+      } catch (error) {
+        setMessage(appMessage, error.message, true);
+      } finally {
+        if (!runningRun('order-flow')) {
+          button.disabled = false;
+          button.textContent = originalText;
+        }
+      }
+    });
+
+    document.getElementById('quickForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (runningRun('quick-check')) {
+        setMessage(appMessage, 'Quick check is already running. Stop it or wait for it to finish before starting another quick check.', true);
+        return;
+      }
+      const button = event.submitter;
+      button.disabled = true;
+      const originalText = button.textContent;
+      button.textContent = 'Starting...';
+      setMessage(appMessage, '');
+      requestNotificationPermission();
+      showToast('Quick check started.');
+      const form = new FormData(event.currentTarget);
+      try {
+        const data = await api(`/api/quick-check?url=${encodeURIComponent(form.get('quickUrl'))}`);
+        showToast('Quick check is running.');
+        await loadRuns();
+      } catch (error) {
+        setMessage(appMessage, error.message, true);
+      } finally {
+        if (!runningRun('quick-check')) {
+          button.disabled = false;
+          button.textContent = originalText;
+        }
+      }
+    });
+
+    document.addEventListener('click', async (event) => {
+      const navButton = event.target.closest('.nav-button');
+      if (navButton) {
+        showSection(navButton.dataset.section);
+        return;
+      }
+
+      const deleteButton = event.target.closest('[data-delete-report]');
+      if (deleteButton) {
+        const id = deleteButton.dataset.deleteReport;
+        if (!confirm(`Delete report #${id}?`)) return;
+        deleteButton.disabled = true;
+        try {
+          await api(`/api/reports/${id}`, { method: 'DELETE' });
+          setMessage(appMessage, `Report #${id} deleted.`);
+          await loadReports();
+        } catch (error) {
+          setMessage(appMessage, error.message, true);
+        } finally {
+          deleteButton.disabled = false;
+        }
+      }
+
+      const stopButton = event.target.closest('[data-stop-run]');
+      if (stopButton) {
+        const runId = stopButton.dataset.stopRun;
+        stopButton.disabled = true;
+        try {
+          await api(`/api/runs/${runId}/stop`, { method: 'POST' });
+          setMessage(appMessage, `Stop requested for ${runId}.`);
+          await loadRuns();
+        } catch (error) {
+          setMessage(appMessage, error.message, true);
+        } finally {
+          stopButton.disabled = false;
+        }
+      }
+    });
+
+    document.getElementById('toggleSidebar').addEventListener('click', () => {
+      appPanel.classList.toggle('sidebar-closed');
+    });
+
+    document.getElementById('closeSidebar').addEventListener('click', () => {
+      appPanel.classList.add('sidebar-closed');
+    });
+
+    document.getElementById('logoutButton').addEventListener('click', () => {
+      if (!confirm('Sign out of the QA Testing Portal?')) {
+        return;
+      }
+      state.token = '';
+      state.user = null;
+      state.reports = [];
+      state.runs = [];
+      localStorage.removeItem(tokenKey);
+      localStorage.removeItem(userKey);
+      renderSession();
+    });
+
+    renderSession();
+    showSection('dashboardSection');
+    if (state.token) {
+      requestNotificationPermission();
+      Promise.all([loadReports(), loadRuns()]).catch(() => {
+        state.token = '';
+        state.user = null;
+        localStorage.removeItem(tokenKey);
+        localStorage.removeItem(userKey);
+        renderSession();
+      });
+    }
+    updateSetupSummary();
+    setInterval(() => {
+      if (state.token) {
+        Promise.all([loadRuns(), loadReports()]).catch(() => {});
+      }
+    }, 3500);
+    document.addEventListener('visibilitychange', () => {
+      if (state.token && !document.hidden) {
+        Promise.all([loadRuns(), loadReports()]).catch(() => {});
+      }
+    });
+  </script>
 </body>
 </html>

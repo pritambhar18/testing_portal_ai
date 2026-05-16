@@ -1,7 +1,0 @@
-first name,lname,phone number,email,address,city,zipcode,card number
-test 01 ,test l 01 ,1234567890,pritam.bhar+000020000@codeclouds.com,test address 01 ,test city 01 ,90900,1444444444444442
-test 02 ,test l 02,1234567891,pritam.bhar+000020001@codeclouds.com,test address 02,test city 02,90911,1444444444444446
-test 03,test l 03,1234567892,pritam.bhar+000020002@codeclouds.com,test address 03,test city 03,90922,1.44444E+15
-test 04,test l 04,1234567893,pritam.bhar+000020003@codeclouds.com,test address 04,test city 04,90933,1444444444444443
-test 05,test l 05,1234567894,pritam.bhar+000020004@codeclouds.com,test address 05,test city 05,90944,4147090000000001
-test 06,test l 06,1234567895,pritam.bhar+000020005@codeclouds.com,test address 06,test city 06,90955,5156760000000001

@@ -1,8 +1,0 @@
-[2026-04-07T19:12:05.527Z] Runner started for http://localhost/testing_portal/admin/login.php
-[2026-04-07T19:12:09.177Z] Row 1: browser opened in private session for pritam.bhar+000020000@codeclouds.com.
-[2026-04-07T19:12:14.666Z] Row 1: failed with error=page.fill: Target page, context or browser has been closed
-Call log:
-[2m  - waiting for locator('input[name=\'firstName\'], input[placeholder=\'First Name\']')[22m
-.
-[2026-04-07T19:12:19.827Z] Row 1: browser session closed.
-[2026-04-07T21:32:11+02:00] PHP action: report registered in index.json for ofr_20260407_211201_f90dbf8e

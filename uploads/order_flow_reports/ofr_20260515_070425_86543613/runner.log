@@ -1,0 +1,4 @@
+[2026-05-15T07:04:27.377Z] Runner started for https://www.savesspottopmarket.com/ultimatesportsfangiftbundle/?AFFID=test&C1=testc1&C2=testc2&C3=testc3
+[2026-05-15T07:04:29.407Z] Row 1: browser opened in private session for pritam.bhar+000020000@codeclouds.com.
+[2026-05-15T07:05:03.401Z] Row 1: failed with error=locator.waitFor: Timeout 30000ms exceeded. Call log: - waiting for locator('input[name=\'creditCardNumber\']').first() to be visible.
+[2026-05-15T07:05:04.019Z] Row 1: browser session closed.
