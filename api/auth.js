@@ -68,8 +68,8 @@ function passwordMatches(inputPassword, storedPassword) {
 async function findUser(email) {
   const normalizedEmail = String(email || '').trim().toLowerCase();
   const adminRows = await query(
-    'SELECT id, name, email, password, status, "admin" AS role FROM admin WHERE email = ? LIMIT 1',
-    [normalizedEmail],
+    'SELECT id, name, email, password, status, ? AS role FROM admin WHERE email = ? LIMIT 1',
+    ['admin', normalizedEmail],
   );
   if (adminRows.length) {
     return adminRows[0];

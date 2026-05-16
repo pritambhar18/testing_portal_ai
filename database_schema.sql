@@ -14,6 +14,16 @@
 SET NAMES utf8mb4;
 SET time_zone = '+00:00';
 
+-- Create/select the application database for tools that import SQL without
+-- choosing a default schema first, such as MySQL Workbench restore/import.
+-- If your hosting provider gives you a different database name, change both
+-- lines below and set DB_NAME in your environment to the same value.
+CREATE DATABASE IF NOT EXISTS testing_portal
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+USE testing_portal;
+
 -- ============================================================
 -- 1. ADMIN TABLE
 -- ============================================================
