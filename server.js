@@ -415,6 +415,61 @@ function buildFailureReportHtml({ title, runId, baseUrl, message }) {
 </html>`;
 }
 
+function buildMissingArtifactHtml(report) {
+  const type = report.report_type || (String(`${report.report_html || ''} ${report.pdf_path || ''}`).includes('/automation/results/') ? 'Quick Check' : '88startech');
+  const passCount = Number.isFinite(Number(report.pass_count)) ? Number(report.pass_count) : 0;
+  const failCount = Number.isFinite(Number(report.fail_count)) ? Number(report.fail_count) : 0;
+  const generated = report.created_at || report.execution_date || '';
+  const expectedPaths = [report.pdf_path, report.report_html].filter(Boolean);
+  const pathRows = expectedPaths.map((pathValue) => `<li>${htmlEscape(pathValue)}</li>`).join('');
+
+  return `<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Report Artifact Missing - #${htmlEscape(report.id)}</title>
+  <style>
+    body{font-family:Arial,Helvetica,sans-serif;margin:28px;color:#111827;background:#fff;line-height:1.5;}
+    .cover{border:1px solid #d8dee9;border-left:5px solid #b42318;border-radius:8px;padding:18px;margin-bottom:18px;}
+    h1{font-size:24px;margin:0 0 8px;color:#111827;}
+    h2{font-size:17px;margin:22px 0 10px;color:#111827;}
+    .meta{color:#667085;margin-top:8px;}
+    .summary{display:flex;gap:12px;flex-wrap:wrap;margin:16px 0;}
+    .card{border:1px solid #d8dee9;border-radius:8px;padding:12px;min-width:130px;background:#f8fafc;}
+    .card span{display:block;color:#667085;font-size:11px;text-transform:uppercase;font-weight:700;}
+    .card strong{display:block;font-size:22px;margin-top:4px;}
+    .notice{border:1px solid #fecdca;background:#fff7f6;border-radius:8px;padding:14px;color:#7a271a;}
+    ul{margin:8px 0 0 20px;padding:0;overflow-wrap:anywhere;}
+  </style>
+</head>
+<body>
+  <section class="cover">
+    <h1>Report #${htmlEscape(report.id)} - ${htmlEscape(type)}</h1>
+    <div class="meta">Offer: ${htmlEscape(report.offer_name || type)}<br>URL: ${htmlEscape(report.test_link || '-')}<br>Browser: ${htmlEscape(report.browser_name || '-')}<br>Status: ${htmlEscape(report.status || 'Completed')}<br>Created: ${htmlEscape(generated || '-')}</div>
+  </section>
+  <div class="summary">
+    <div class="card"><span>Passed</span><strong>${passCount}</strong></div>
+    <div class="card"><span>Failed</span><strong>${failCount}</strong></div>
+  </div>
+  <section class="notice">
+    <h2>Original report file is not available on this server</h2>
+    <p>The database record exists, but the generated PDF/HTML artifact is missing from the staging filesystem. This usually happens when database rows are copied or deployed without the generated report files.</p>
+    ${pathRows ? `<p><strong>Expected artifact path(s):</strong></p><ul>${pathRows}</ul>` : ''}
+  </section>
+</body>
+</html>`;
+}
+
+function sendMissingArtifactFallback(res, report, preferred = 'view') {
+  const html = buildMissingArtifactHtml(report);
+  const filename = `report-${report.id || 'missing-artifact'}.html`;
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  if (preferred === 'download') {
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+  }
+  return res.status(200).send(html);
+}
+
 function buildQuickReportHtml({ runId, baseUrl, checks }) {
   const passedCount = checks.filter((item) => String(item.status).toUpperCase() === 'PASS').length;
   const failedCount = checks.filter((item) => String(item.status).toUpperCase() === 'FAIL').length;
@@ -1018,7 +1073,7 @@ app.get('/reports/:id/download', async (req, res) => {
         absolute,
         report: rows[0],
       });
-      return res.status(404).json({ success: false, error: 'Report file not available' });
+      return sendMissingArtifactFallback(res, rows[0], 'download');
     }
 
     console.log(`[Download] Serving report: id=${req.params.id}, file=${absolute}`);
@@ -1046,7 +1101,7 @@ app.get('/reports/:id', async (req, res) => {
       console.error(`[View] Artifact resolution failed for id=${req.params.id}`, {
         report: rows[0],
       });
-      return res.status(404).json({ success: false, error: 'Report file not available' });
+      return sendMissingArtifactFallback(res, rows[0], 'view');
     }
 
     console.log(`[View] Redirecting to report: id=${req.params.id}, path=${reportPath}`);
