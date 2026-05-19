@@ -824,6 +824,108 @@
       flex-wrap: wrap;
     }
 
+    .report-controls {
+      border-bottom: 1px solid var(--line);
+      background: #fbfcff;
+      padding: 16px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .report-filter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      align-items: end;
+    }
+
+    .report-filter-grid .field.wide {
+      grid-column: span 2;
+    }
+
+    .report-filter-grid .filter-action {
+      display: flex;
+      align-items: end;
+    }
+
+    .report-filter-grid .filter-action button {
+      width: 100%;
+      min-height: 38px;
+    }
+
+    .report-filter-grid .field {
+      min-width: 0;
+    }
+
+    .report-filter-grid label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .02em;
+    }
+
+    .report-filter-grid input,
+    .report-filter-grid select {
+      min-height: 38px;
+      padding: 8px 10px;
+      font-size: 13px;
+    }
+
+    .report-controls-footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: center;
+      flex-wrap: wrap;
+      padding-top: 2px;
+    }
+
+    .report-pagination {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .rows-control,
+    .page-nav {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 6px;
+    }
+
+    .rows-control label {
+      margin: 0 0 0 4px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .rows-control select {
+      width: 84px;
+      min-height: 32px;
+      padding: 6px 28px 6px 9px;
+      font-size: 13px;
+    }
+
+    .report-pagination button {
+      min-height: 32px;
+      padding: 7px 10px;
+      box-shadow: none;
+    }
+
+    .report-pagination span {
+      color: #344054;
+      font-size: 13px;
+      font-weight: 700;
+      min-width: 92px;
+      text-align: center;
+    }
+
     .empty-cell {
       color: var(--muted);
       text-align: center;
@@ -857,6 +959,10 @@
       .field-grid,
       .run-strip {
         grid-template-columns: 1fr;
+      }
+
+      .report-filter-grid .field.wide {
+        grid-column: auto;
       }
 
       .content {
@@ -1178,6 +1284,65 @@
             <div class="panel-header">
               <h3><span class="icon">LB</span> Report Library</h3>
             </div>
+            <div class="report-controls">
+              <div class="report-filter-grid">
+                <div class="field wide">
+                  <label for="reportSearch">Search</label>
+                  <input id="reportSearch" type="search" placeholder="ID, offer, URL, browser, run id">
+                </div>
+                <div class="field">
+                  <label for="reportTypeFilter">Type</label>
+                  <select id="reportTypeFilter">
+                    <option value="">All types</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="reportBrowserFilter">Browser</label>
+                  <select id="reportBrowserFilter">
+                    <option value="">All browsers</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="reportResultFilter">Result</label>
+                  <select id="reportResultFilter">
+                    <option value="">Any result</option>
+                    <option value="pass">Has passes</option>
+                    <option value="fail">Has failures</option>
+                    <option value="clean">No failures</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="reportFromDate">From</label>
+                  <input id="reportFromDate" type="date">
+                </div>
+                <div class="field">
+                  <label for="reportToDate">To</label>
+                  <input id="reportToDate" type="date">
+                </div>
+                <div class="field filter-action">
+                  <button id="reportResetFilters" class="light" type="button">Reset</button>
+                </div>
+              </div>
+              <div class="report-controls-footer">
+                <p id="reportFilterSummary" class="helper-text">Showing all reports.</p>
+                <div class="report-pagination">
+                  <div class="rows-control">
+                    <label for="reportPageSize">Rows</label>
+                    <select id="reportPageSize">
+                      <option value="10">10</option>
+                      <option value="25" selected>25</option>
+                      <option value="50">50</option>
+                      <option value="100">100</option>
+                    </select>
+                  </div>
+                  <div class="page-nav">
+                    <button id="reportPrevPage" class="ghost" type="button">Previous</button>
+                    <span id="reportPageStatus">Page 1 of 1</span>
+                    <button id="reportNextPage" class="ghost" type="button">Next</button>
+                  </div>
+                </div>
+              </div>
+            </div>
             <div class="panel-body table-wrap">
               <table>
                 <thead>
@@ -1185,6 +1350,7 @@
                     <th>ID</th>
                     <th>Type</th>
                     <th>Offer / URL</th>
+                    <th>Browser</th>
                     <th>Status</th>
                     <th>Result</th>
                     <th>Created</th>
@@ -1209,6 +1375,16 @@
       reports: [],
       runs: [],
       notifiedRuns: new Set(JSON.parse(sessionStorage.getItem('qa_portal_notified_runs') || '[]')),
+      reportFilters: {
+        search: '',
+        type: '',
+        browser: '',
+        result: '',
+        from: '',
+        to: '',
+        page: 1,
+        pageSize: 25,
+      },
     };
 
     const sections = {
@@ -1359,6 +1535,17 @@
       return link.includes('/automation/results/') ? 'Quick Check' : '88startech';
     }
 
+    function browserLabel(value) {
+      const browser = String(value || '-').trim();
+      const normalized = browser.toLowerCase();
+      if (normalized === 'msedge') return 'Edge';
+      if (normalized === 'chromium') return 'Chromium';
+      if (normalized === 'chrome') return 'Chrome';
+      if (normalized === 'firefox') return 'Firefox';
+      if (normalized === 'webkit') return 'WebKit';
+      return browser || '-';
+    }
+
     function runTypeLabel(run) {
       return run.type === 'quick-check' ? 'Quick Check' : '88startech';
     }
@@ -1381,6 +1568,105 @@
           <span class="count-pill fail">Fail ${fail ?? 0}</span>
         </div>
       `;
+    }
+
+    function reportDate(report) {
+      const value = report.created_at || report.execution_date || '';
+      const date = value ? new Date(value) : null;
+      return date && !Number.isNaN(date.getTime()) ? date : null;
+    }
+
+    function dateInputTime(value, endOfDay = false) {
+      if (!value) return null;
+      const date = new Date(`${value}T${endOfDay ? '23:59:59.999' : '00:00:00.000'}`);
+      return Number.isNaN(date.getTime()) ? null : date.getTime();
+    }
+
+    function uniqueReportValues(getValue) {
+      return Array.from(new Set(state.reports.map(getValue).filter(Boolean)))
+        .sort((a, b) => String(a).localeCompare(String(b)));
+    }
+
+    function syncSelectOptions(selectId, values, defaultLabel, currentValue) {
+      const select = document.getElementById(selectId);
+      const options = [`<option value="">${safeText(defaultLabel)}</option>`]
+        .concat(values.map((value) => `<option value="${safeText(value)}">${safeText(value)}</option>`));
+      select.innerHTML = options.join('');
+      select.value = values.includes(currentValue) ? currentValue : '';
+      return select.value;
+    }
+
+    function populateReportFilters() {
+      state.reportFilters.type = syncSelectOptions(
+        'reportTypeFilter',
+        uniqueReportValues(reportType),
+        'All types',
+        state.reportFilters.type,
+      );
+      state.reportFilters.browser = syncSelectOptions(
+        'reportBrowserFilter',
+        uniqueReportValues((report) => browserLabel(report.browser_name)),
+        'All browsers',
+        state.reportFilters.browser,
+      );
+    }
+
+    function reportMatchesFilters(report) {
+      const filters = state.reportFilters;
+      const type = reportType(report);
+      const status = report.status || 'Completed';
+      const pass = Number(report.pass_count) || 0;
+      const fail = Number(report.fail_count) || 0;
+      const search = filters.search.trim().toLowerCase();
+
+      if (filters.type && type !== filters.type) return false;
+      if (filters.browser && browserLabel(report.browser_name) !== filters.browser) return false;
+      if (filters.result === 'pass' && pass <= 0) return false;
+      if (filters.result === 'fail' && fail <= 0) return false;
+      if (filters.result === 'clean' && fail > 0) return false;
+
+      const created = reportDate(report);
+      const from = dateInputTime(filters.from);
+      const to = dateInputTime(filters.to, true);
+      const createdTime = created?.getTime() ?? null;
+      if (from !== null && (createdTime === null || createdTime < from)) return false;
+      if (to !== null && (createdTime === null || createdTime > to)) return false;
+
+      if (!search) return true;
+      const haystack = [
+        report.id,
+        type,
+        status,
+        report.offer_name,
+        report.test_link,
+        report.browser_name,
+        browserLabel(report.browser_name),
+        report.run_id,
+        report.pdf_path,
+        report.report_html,
+      ].map((value) => String(value ?? '').toLowerCase()).join(' ');
+      return haystack.includes(search);
+    }
+
+    function filteredReports() {
+      return state.reports.filter(reportMatchesFilters);
+    }
+
+    function renderAllReports() {
+      const reports = filteredReports();
+      const totalPages = Math.max(1, Math.ceil(reports.length / state.reportFilters.pageSize));
+      state.reportFilters.page = Math.min(Math.max(1, state.reportFilters.page), totalPages);
+      const start = (state.reportFilters.page - 1) * state.reportFilters.pageSize;
+      const pageReports = reports.slice(start, start + state.reportFilters.pageSize);
+
+      renderRows('allReportsBody', pageReports, true);
+      document.getElementById('reportFilterSummary').textContent = reports.length === state.reports.length
+        ? `Showing ${reports.length} report${reports.length === 1 ? '' : 's'}.`
+        : `Showing ${reports.length} of ${state.reports.length} reports.`;
+      document.getElementById('reportPageStatus').textContent = `Page ${state.reportFilters.page} of ${totalPages}`;
+      document.getElementById('reportPrevPage').disabled = state.reportFilters.page <= 1;
+      document.getElementById('reportNextPage').disabled = state.reportFilters.page >= totalPages;
+      document.getElementById('reportPageSize').value = String(state.reportFilters.pageSize);
     }
 
     function resetAutomationForm() {
@@ -1409,8 +1695,9 @@
 
     function renderRows(targetId, reports, includeType = false) {
       const body = document.getElementById(targetId);
+      const includeBrowser = targetId === 'orderReportsBody' || targetId === 'allReportsBody';
       if (!reports.length) {
-        const count = targetId === 'orderReportsBody' ? 7 : includeType ? 7 : 6;
+        const count = 6 + (includeType ? 1 : 0) + (includeBrowser ? 1 : 0);
         body.innerHTML = `<tr><td class="empty-cell" colspan="${count}">No reports available.</td></tr>`;
         return;
       }
@@ -1419,8 +1706,8 @@
         const view = reportLink(report);
         const download = reportDownloadLink(report);
         const typeCell = includeType ? `<td>${safeText(reportType(report))}</td>` : '';
-        const browserCell = targetId === 'orderReportsBody'
-          ? `<td title="${safeText(report.browser_name || '-')}">${safeText(report.browser_name || '-')}</td>`
+        const browserCell = includeBrowser
+          ? `<td title="${safeText(browserLabel(report.browser_name))}">${safeText(browserLabel(report.browser_name))}</td>`
           : '';
         return `
           <tr>
@@ -1454,7 +1741,8 @@
       renderRows('latestReportsBody', state.reports.slice(0, 8), true);
       renderRows('orderReportsBody', orderReports, false);
       renderRows('quickReportsBody', quickReports, false);
-      renderRows('allReportsBody', state.reports, true);
+      populateReportFilters();
+      renderAllReports();
     }
 
     function renderRuns() {
@@ -1749,6 +2037,77 @@
           button.textContent = originalText;
         }
       }
+    });
+
+    document.getElementById('reportSearch').addEventListener('input', (event) => {
+      state.reportFilters.search = event.target.value;
+      state.reportFilters.page = 1;
+      renderAllReports();
+    });
+
+    document.getElementById('reportTypeFilter').addEventListener('change', (event) => {
+      state.reportFilters.type = event.target.value;
+      state.reportFilters.page = 1;
+      renderAllReports();
+    });
+
+    document.getElementById('reportBrowserFilter').addEventListener('change', (event) => {
+      state.reportFilters.browser = event.target.value;
+      state.reportFilters.page = 1;
+      renderAllReports();
+    });
+
+    document.getElementById('reportResultFilter').addEventListener('change', (event) => {
+      state.reportFilters.result = event.target.value;
+      state.reportFilters.page = 1;
+      renderAllReports();
+    });
+
+    document.getElementById('reportFromDate').addEventListener('change', (event) => {
+      state.reportFilters.from = event.target.value;
+      state.reportFilters.page = 1;
+      renderAllReports();
+    });
+
+    document.getElementById('reportToDate').addEventListener('change', (event) => {
+      state.reportFilters.to = event.target.value;
+      state.reportFilters.page = 1;
+      renderAllReports();
+    });
+
+    document.getElementById('reportPageSize').addEventListener('change', (event) => {
+      state.reportFilters.pageSize = Number(event.target.value) || 25;
+      state.reportFilters.page = 1;
+      renderAllReports();
+    });
+
+    document.getElementById('reportPrevPage').addEventListener('click', () => {
+      state.reportFilters.page = Math.max(1, state.reportFilters.page - 1);
+      renderAllReports();
+    });
+
+    document.getElementById('reportNextPage').addEventListener('click', () => {
+      state.reportFilters.page += 1;
+      renderAllReports();
+    });
+
+    document.getElementById('reportResetFilters').addEventListener('click', () => {
+      state.reportFilters = {
+        search: '',
+        type: '',
+        browser: '',
+        result: '',
+        from: '',
+        to: '',
+        page: 1,
+        pageSize: 25,
+      };
+      document.getElementById('reportSearch').value = '';
+      document.getElementById('reportResultFilter').value = '';
+      document.getElementById('reportFromDate').value = '';
+      document.getElementById('reportToDate').value = '';
+      populateReportFilters();
+      renderAllReports();
     });
 
     document.addEventListener('click', async (event) => {

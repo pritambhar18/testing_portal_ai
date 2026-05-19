@@ -435,6 +435,9 @@
                         <a href="/reports/${report.id}/download" download class="view-report-btn" title="Download PDF report">
                             <i class="bi bi-download"></i> Download
                         </a>
+                        <button class="view-report-btn" style="background: #dc3545; border: none; cursor: pointer;" onclick="deleteReport(${report.id})" title="Delete report">
+                            <i class="bi bi-trash"></i> Delete
+                        </button>
                     </div>
                 </td>
                 <td>
@@ -503,6 +506,39 @@
                 emptyState.style.display = 'block';
                 console.error('Error loading reports:', error);
                 showAlert('danger', `Error: ${error.message}`);
+            }
+        }
+
+        /**
+         * Delete a report
+         */
+        async function deleteReport(reportId) {
+            if (!confirm(`Are you sure you want to delete report #${reportId}? This action cannot be undone.`)) {
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('qa_portal_token');
+                const response = await fetch(`/api/reports/${reportId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    throw new Error(data.error || 'Failed to delete report');
+                }
+
+                showAlert('success', `Report #${reportId} deleted successfully`);
+                // Reload reports
+                await loadReports();
+            } catch (error) {
+                console.error('Error deleting report:', error);
+                showAlert('danger', `Error deleting report: ${error.message}`);
             }
         }
 

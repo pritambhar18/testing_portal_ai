@@ -13,7 +13,19 @@ import { query } from '../config/db.js';
  */
 export async function saveTestReport(req, res) {
   try {
-    const { test_link, execution_date, pdf_path, report_html, status } = req.body;
+    const { 
+      test_link, 
+      execution_date, 
+      pdf_path, 
+      report_html, 
+      status,
+      report_type,
+      run_id,
+      offer_name,
+      browser_name,
+      pass_count,
+      fail_count
+    } = req.body;
 
     // Validate required fields
     if (!test_link || !execution_date || (!pdf_path && !report_html)) {
@@ -50,10 +62,26 @@ export async function saveTestReport(req, res) {
       });
     }
 
+    // Validate pass_count and fail_count are non-negative integers if provided
+    if (pass_count !== undefined && (isNaN(parseInt(pass_count, 10)) || parseInt(pass_count, 10) < 0)) {
+      return res.status(400).json({
+        success: false,
+        error: 'pass_count must be a non-negative integer',
+      });
+    }
+
+    if (fail_count !== undefined && (isNaN(parseInt(fail_count, 10)) || parseInt(fail_count, 10) < 0)) {
+      return res.status(400).json({
+        success: false,
+        error: 'fail_count must be a non-negative integer',
+      });
+    }
+
     // Insert into database
     const sqlQuery = `
-      INSERT INTO test_reports (test_link, execution_date, pdf_path, report_html, status)
-      VALUES (?, ?, ?, ?, ?)
+      INSERT INTO test_reports 
+      (test_link, execution_date, pdf_path, report_html, report_type, run_id, offer_name, browser_name, pass_count, fail_count, status)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     const results = await query(sqlQuery, [
@@ -61,6 +89,12 @@ export async function saveTestReport(req, res) {
       execution_date,
       pdf_path || null,
       report_html || null,
+      report_type || null,
+      run_id || null,
+      offer_name || null,
+      browser_name || null,
+      pass_count !== undefined ? parseInt(pass_count, 10) : 0,
+      fail_count !== undefined ? parseInt(fail_count, 10) : 0,
       status || 'Completed',
     ]);
 
@@ -75,6 +109,12 @@ export async function saveTestReport(req, res) {
         execution_date,
         pdf_path,
         report_html,
+        report_type: report_type || null,
+        run_id: run_id || null,
+        offer_name: offer_name || null,
+        browser_name: browser_name || null,
+        pass_count: pass_count !== undefined ? parseInt(pass_count, 10) : 0,
+        fail_count: fail_count !== undefined ? parseInt(fail_count, 10) : 0,
         status: status || 'Completed',
       },
     });

@@ -43,11 +43,11 @@ async function enrichReport(report) {
   const type = reportType(report);
   const enriched = {
     ...report,
-    report_type: type,
-    offer_name: type === '88startech' ? '88startech' : 'Quick Check',
-    browser_name: type === '88startech' ? '-' : 'Chromium',
-    pass_count: null,
-    fail_count: null,
+    report_type: report.report_type || type,
+    offer_name: report.offer_name || (type === '88startech' ? '88startech' : 'Quick Check'),
+    browser_name: report.browser_name || (type === '88startech' ? '-' : 'Chromium'),
+    pass_count: report.pass_count ?? null,
+    fail_count: report.fail_count ?? null,
   };
 
   if (type === '88startech') {
@@ -58,8 +58,8 @@ async function enrichReport(report) {
     if (payload) {
       enriched.offer_name = payload.offer_name || enriched.offer_name;
       enriched.browser_name = payload.browser || enriched.browser_name;
-      enriched.pass_count = Number(payload.placed_orders || 0);
-      enriched.fail_count = Number(payload.failed_orders || 0);
+      enriched.pass_count = enriched.pass_count ?? Number(payload.placed_orders || 0);
+      enriched.fail_count = enriched.fail_count ?? Number(payload.failed_orders || 0);
     }
     return enriched;
   }
@@ -68,10 +68,52 @@ async function enrichReport(report) {
   const jsonPath = htmlPath ? htmlPath.replace(/\.html$/i, '.json') : publicPathToAbsolute(report.pdf_path || '')?.replace(/\.pdf$/i, '.json');
   const checks = await readJsonIfExists(jsonPath);
   if (Array.isArray(checks)) {
-    enriched.pass_count = checks.filter((item) => String(item.status || '').toUpperCase() === 'PASS').length;
-    enriched.fail_count = checks.filter((item) => String(item.status || '').toUpperCase() === 'FAIL').length;
+    const passCount = checks.filter((item) => String(item.status || '').toUpperCase() === 'PASS').length;
+    const failCount = checks.filter((item) => String(item.status || '').toUpperCase() === 'FAIL').length;
+    enriched.pass_count = enriched.pass_count ?? passCount;
+    enriched.fail_count = enriched.fail_count ?? failCount;
   }
   return enriched;
+}
+
+async function getReportColumns() {
+  const columns = await query('SHOW COLUMNS FROM test_reports');
+  return new Set(columns.map((column) => column.Field));
+}
+
+function selectColumn(columns, columnName, fallback = 'NULL') {
+  return columns.has(columnName)
+    ? `\`${columnName}\``
+    : `${fallback} AS \`${columnName}\``;
+}
+
+async function fetchReports() {
+  const columns = await getReportColumns();
+  const selectedColumns = [
+    selectColumn(columns, 'id'),
+    selectColumn(columns, 'test_link', "''"),
+    selectColumn(columns, 'execution_date', 'CURRENT_TIMESTAMP'),
+    selectColumn(columns, 'pdf_path'),
+    selectColumn(columns, 'report_html'),
+    selectColumn(columns, 'report_type'),
+    selectColumn(columns, 'run_id'),
+    selectColumn(columns, 'offer_name'),
+    selectColumn(columns, 'browser_name'),
+    selectColumn(columns, 'pass_count', '0'),
+    selectColumn(columns, 'fail_count', '0'),
+    selectColumn(columns, 'status', "'Completed'"),
+    selectColumn(columns, 'created_at', 'CURRENT_TIMESTAMP'),
+  ];
+  const orderColumns = [
+    columns.has('execution_date') ? '`execution_date` DESC' : null,
+    columns.has('id') ? '`id` DESC' : null,
+  ].filter(Boolean);
+
+  return await query(`
+    SELECT ${selectedColumns.join(', ')}
+      FROM test_reports
+      ${orderColumns.length ? `ORDER BY ${orderColumns.join(', ')}` : ''}
+  `);
 }
 
 /**
@@ -81,20 +123,7 @@ async function enrichReport(report) {
  */
 export async function getTestReports(req, res) {
   try {
-    const sqlQuery = `
-      SELECT
-        id,
-        test_link,
-        execution_date,
-        pdf_path,
-        report_html,
-        status,
-        created_at
-      FROM test_reports
-      ORDER BY execution_date DESC, id DESC
-    `;
-
-    const results = await query(sqlQuery);
+    const results = await fetchReports();
     const enrichedResults = await Promise.all(results.map(enrichReport));
 
     // Success response

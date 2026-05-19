@@ -11,7 +11,7 @@ import { dirname, join, resolve, basename } from 'path';
 import { saveTestReport } from './api/save-test-report.js';
 import { getTestReports } from './api/get-test-reports.js';
 import { login, requireAuth } from './api/auth.js';
-import { query } from './config/db.js';
+import { ensurePortalSchema, query } from './config/db.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -153,12 +153,23 @@ async function updateAutomationLog(id, payload) {
   }
 }
 
-async function saveReportRecord({ testLink, pdfPath, htmlPath, status }) {
+async function saveReportRecord({ testLink, pdfPath, htmlPath, status, reportType, runId, offerName, browserName, passCount, failCount }) {
   try {
     const result = await query(
-      `INSERT INTO test_reports (test_link, execution_date, pdf_path, report_html, status)
-       VALUES (?, NOW(), ?, ?, ?)`,
-      [testLink, pdfPath || null, htmlPath || null, status || 'Completed'],
+      `INSERT INTO test_reports (test_link, execution_date, pdf_path, report_html, report_type, run_id, offer_name, browser_name, pass_count, fail_count, status)
+       VALUES (?, NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        testLink,
+        pdfPath || null,
+        htmlPath || null,
+        reportType || null,
+        runId || null,
+        offerName || null,
+        browserName || null,
+        passCount !== undefined ? parseInt(passCount, 10) : 0,
+        failCount !== undefined ? parseInt(failCount, 10) : 0,
+        status || 'Completed',
+      ],
     );
     return result.insertId;
   } catch (error) {
@@ -556,12 +567,10 @@ app.get('/api/reports', requireAuth, getTestReports);
 
 app.delete('/api/reports/:id', requireAuth, async (req, res) => {
   try {
-    const rows = await query(
-      'SELECT id, test_link, pdf_path, report_html FROM test_reports WHERE id = ? LIMIT 1',
-      [req.params.id],
-    );
+    const rows = await query('SELECT * FROM test_reports WHERE id = ? LIMIT 1', [req.params.id]);
 
     if (rows.length === 0) {
+      console.warn(`[Delete] Report not found: id=${req.params.id}`);
       return res.status(404).json({
         success: false,
         error: 'Report not found',
@@ -570,6 +579,7 @@ app.delete('/api/reports/:id', requireAuth, async (req, res) => {
 
     const report = rows[0];
     await query('DELETE FROM test_reports WHERE id = ?', [req.params.id]);
+    console.log(`[Delete] Deleted report from database: id=${req.params.id}`);
 
     const artifactPath = report.report_html || report.pdf_path || '';
     const match = String(artifactPath).match(/\/uploads\/order_flow_reports\/([^/]+)/);
@@ -577,6 +587,7 @@ app.delete('/api/reports/:id', requireAuth, async (req, res) => {
       const reportDir = join(orderReportsPath, basename(match[1]));
       if (reportDir.startsWith(orderReportsPath) && existsSync(reportDir)) {
         await fs.rm(reportDir, { recursive: true, force: true });
+        console.log(`[Delete] Removed order-flow report directory: ${reportDir}`);
       }
     } else {
       const quickMatch = String(artifactPath).match(/\/automation\/results\/([^/.]+)/);
@@ -606,11 +617,13 @@ app.delete('/api/reports/:id', requireAuth, async (req, res) => {
             await fs.rm(artifact, { recursive: true, force: true });
           }
         }
+        console.log(`[Delete] Removed quick-check report artifacts for: ${base}`);
       }
       for (const pathCandidate of [report.report_html, report.pdf_path]) {
         const artifact = resolvePublicArtifact(pathCandidate);
         if (artifact && existsSync(artifact)) {
           await fs.rm(artifact, { force: true });
+          console.log(`[Delete] Removed artifact: ${artifact}`);
         }
       }
     }
@@ -621,7 +634,7 @@ app.delete('/api/reports/:id', requireAuth, async (req, res) => {
       id: Number(req.params.id),
     });
   } catch (error) {
-    console.error('Delete report error:', error);
+    console.error('[Delete] Error:', error);
     return res.status(500).json({
       success: false,
       error: 'Failed to delete report',
@@ -816,6 +829,12 @@ app.post('/api/run-automation', requireAuth, async (req, res) => {
         pdfPath,
         htmlPath,
         status,
+        reportType: '88startech',
+        runId: reportId,
+        offerName: report.offer_name || 'Order Flow Automation',
+        browserName: report.browser || 'Chromium',
+        passCount: report.placed_orders || 0,
+        failCount: report.failed_orders || 0,
       });
       await updateAutomationLog(logId, {
         status,
@@ -917,11 +936,20 @@ app.get('/api/quick-check', requireAuth, async (req, res) => {
       const publicHtmlPath = toPublicPath(htmlPath);
       const publicPdfPath = pdfGenerated ? toPublicPath(pdfPath) : publicHtmlPath;
 
+      const passCount = checks.filter((item) => String(item.status || '').toUpperCase() === 'PASS').length;
+      const failCount = checks.filter((item) => String(item.status || '').toUpperCase() === 'FAIL').length;
+
       const reportDbId = await saveReportRecord({
         testLink: baseUrl,
         pdfPath: publicPdfPath,
         htmlPath: publicHtmlPath,
         status,
+        reportType: 'Quick Check',
+        runId,
+        offerName: 'Quick Check',
+        browserName: 'Chromium',
+        passCount,
+        failCount,
       });
       await updateAutomationLog(logId, {
         status,
@@ -976,22 +1004,27 @@ app.get('/view-reports', (req, res) => {
 
 app.get('/reports/:id/download', async (req, res) => {
   try {
-    const rows = await query(
-      'SELECT id, test_link, pdf_path, report_html FROM test_reports WHERE id = ? LIMIT 1',
-      [req.params.id],
-    );
+    const rows = await query('SELECT * FROM test_reports WHERE id = ? LIMIT 1', [req.params.id]);
     if (rows.length === 0) {
+      console.warn(`[Download] Report not found: id=${req.params.id}`);
       return res.status(404).json({ success: false, error: 'Report not found' });
     }
 
     const artifact = await resolveReportArtifact(rows[0], 'download');
     const absolute = resolvePublicArtifact(artifact);
     if (!artifact || !absolute) {
+      console.error(`[Download] Artifact resolution failed for id=${req.params.id}`, {
+        artifact,
+        absolute,
+        report: rows[0],
+      });
       return res.status(404).json({ success: false, error: 'Report file not available' });
     }
 
+    console.log(`[Download] Serving report: id=${req.params.id}, file=${absolute}`);
     return res.download(absolute);
   } catch (error) {
+    console.error('[Download] Error:', error);
     return res.status(500).json({
       success: false,
       error: 'Failed to download report',
@@ -1002,21 +1035,24 @@ app.get('/reports/:id/download', async (req, res) => {
 
 app.get('/reports/:id', async (req, res) => {
   try {
-    const rows = await query(
-      'SELECT id, test_link, pdf_path, report_html FROM test_reports WHERE id = ? LIMIT 1',
-      [req.params.id],
-    );
+    const rows = await query('SELECT * FROM test_reports WHERE id = ? LIMIT 1', [req.params.id]);
     if (rows.length === 0) {
+      console.warn(`[View] Report not found: id=${req.params.id}`);
       return res.status(404).json({ success: false, error: 'Report not found' });
     }
 
     const reportPath = await resolveReportArtifact(rows[0], 'view');
     if (!reportPath) {
+      console.error(`[View] Artifact resolution failed for id=${req.params.id}`, {
+        report: rows[0],
+      });
       return res.status(404).json({ success: false, error: 'Report file not available' });
     }
 
+    console.log(`[View] Redirecting to report: id=${req.params.id}, path=${reportPath}`);
     return res.redirect(reportPath);
   } catch (error) {
+    console.error('[View] Error:', error);
     return res.status(500).json({
       success: false,
       error: 'Failed to open report',
@@ -1043,9 +1079,19 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`QA Testing Portal Node server running on http://localhost:${PORT}`);
-  console.log('Routes: GET /, POST /api/login, POST /api/run-automation, GET /api/reports, GET /api/quick-check');
-});
+async function startServer() {
+  try {
+    await ensurePortalSchema();
+  } catch (error) {
+    console.warn('[DB] Startup schema check skipped:', error.message);
+  }
+
+  app.listen(PORT, () => {
+    console.log(`QA Testing Portal Node server running on http://localhost:${PORT}`);
+    console.log('Routes: GET /, POST /api/login, POST /api/run-automation, GET /api/reports, GET /api/quick-check');
+  });
+}
+
+startServer();
 
 export default app;

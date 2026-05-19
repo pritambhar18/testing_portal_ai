@@ -1,0 +1,11 @@
+node_modules/
+.env
+*.log
+
+# Generated automation artifacts
+automation/results/*.html
+automation/results/*.json
+automation/results/*.pdf
+automation/results/screenshots/
+uploads/order_flow_reports/
+uploads/order_flow_stops/

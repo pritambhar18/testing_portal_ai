@@ -1,7 +1,7 @@
 -- ============================================================
 -- QA Testing Portal - Node.js MySQL Schema
 -- Runtime: Express.js + JWT + Playwright
--- Updated: 2026-05-17
+-- Updated: 2026-05-19
 --
 -- Beginner hosting notes:
 -- 1. Create the database first in your host dashboard, then run this file.
@@ -131,9 +131,11 @@ CREATE TABLE IF NOT EXISTS automation_logs (
 -- ============================================================
 -- EXISTING DATABASE MIGRATION NOTES
 -- ============================================================
--- If you already imported an older schema and columns are missing, run only
--- the ALTER statements you need. Some MySQL hosts do not support
--- "ADD COLUMN IF NOT EXISTS", so these are commented out intentionally.
+-- If you already imported an older schema and columns are missing, the Node
+-- app will try to add the missing additive columns on startup. If your DB user
+-- does not have ALTER permission, run only the ALTER statements you need below.
+-- Some MySQL hosts do not support "ADD COLUMN IF NOT EXISTS", so these are
+-- commented out intentionally.
 --
 -- ALTER TABLE test_reports ADD COLUMN report_type VARCHAR(50) DEFAULT NULL COMMENT 'order-flow, quick-check, 88startech, or Quick Check.';
 -- ALTER TABLE test_reports ADD COLUMN run_id VARCHAR(255) DEFAULT NULL COMMENT 'Automation run id such as ofr_* or quick_*.';
@@ -145,6 +147,13 @@ CREATE TABLE IF NOT EXISTS automation_logs (
 --
 -- ALTER TABLE automation_logs ADD COLUMN created_by VARCHAR(255) DEFAULT NULL COMMENT 'Email from JWT payload when available.';
 -- ALTER TABLE automation_logs ADD COLUMN finished_at DATETIME NULL DEFAULT NULL;
+--
+-- Optional indexes for older databases after adding the columns above.
+-- Run only indexes that do not already exist.
+--
+-- ALTER TABLE test_reports ADD INDEX idx_test_reports_report_type (report_type);
+-- ALTER TABLE test_reports ADD INDEX idx_test_reports_run_id (run_id);
+-- ALTER TABLE automation_logs ADD INDEX idx_automation_logs_created_by (created_by);
 
 -- ============================================================
 -- DEFAULT DATA
