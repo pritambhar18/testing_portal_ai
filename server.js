@@ -351,16 +351,18 @@ function htmlEscape(value) {
 
 function describeQuickStep(check, baseUrl) {
   const label = String(check.label || 'Validation check');
-  return `Open the browser, navigate to ${baseUrl}, locate the relevant form or page element, run the "${label}" validation, capture the observed page state, and compare it with the expected behavior.`;
+  return `Step 1: Launch browser and navigate to test URL (${baseUrl})\nStep 2: Identify target form element and validate control visibility\nStep 3: Execute validation scenario: "${label}"\nStep 4: Capture screenshot of observed state\nStep 5: Compare against expected behavior criteria and document findings`;
 }
 
 function describeQuickResult(check) {
   const status = String(check.status || '').toUpperCase();
   const detail = String(check.detail || 'No additional detail was returned by the runner.');
+  
   if (status === 'PASS') {
-    return `The validation passed. The page behavior matched the expected rule. Runner detail: ${detail}`;
+    return `Result: PASS ✓\nThe control behavior conforms to specification requirements. Validation rules are correctly enforced at the browser level. Technical findings: ${detail}`;
   }
-  return `The validation failed or needs attention. Expected behavior: the page should show clear validation, enforce the field rule, or expose the required form element. Actual runner detail: ${detail}`;
+  
+  return `Result: FAIL ✗\nSpecification Requirement: The control should enforce input validation and provide clear user feedback when constraints are violated.\nExpected Behavior: Form field should validate input according to business rules (field type, length constraints, character restrictions, and format validation).\nActual Behavior: Validation did not occur or was not properly enforced. Technical findings: ${detail}`;
 }
 
 function classifyQuickIssue(check) {
@@ -373,6 +375,53 @@ function classifyQuickIssue(check) {
     return { severity: 'Medium', priority: 'P2' };
   }
   return { severity: 'Low', priority: 'P3' };
+}
+
+function quickCategory(check) {
+  const label = String(check.label || '').toLowerCase();
+  if (/security|https|ssl|robots|safe browsing|http2/.test(label)) return 'Security';
+  if (/copyright|grammar|spelling|content/.test(label)) return 'Content';
+  if (/padding|layout|overflow|image|screen/.test(label)) return 'Layout';
+  if (/card|cvv|payment/.test(label)) return 'Payment';
+  if (/phone|zip|blank|required|validation|form|checkbox/.test(label)) return 'Form Validation';
+  return 'General QA';
+}
+
+function generateTestCaseId(check, index) {
+  const category = quickCategory(check);
+  const categoryPrefix = {
+    'Security': 'SEC',
+    'Content': 'CON',
+    'Layout': 'LAY',
+    'Payment': 'PAY',
+    'Form Validation': 'FRM',
+    'General QA': 'QA'
+  }[category] || 'TC';
+  
+  return `${categoryPrefix}-${String(index + 1).padStart(3, '0')}`;
+}
+
+function generateTestCaseTitle(check) {
+  const label = String(check.label || 'Validation Check');
+  // Convert label to Title Case and make it more formal
+  const titleCase = label
+    .split(' ')
+    .map((word, i) => {
+      if (i === 0 || word.length > 2) {
+        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+      }
+      return word.toLowerCase();
+    })
+    .join(' ');
+  
+  return titleCase;
+}
+
+function quickStatusClass(status) {
+  const value = String(status || '').toUpperCase();
+  if (value === 'PASS') return 'pass';
+  if (value === 'FAIL') return 'fail';
+  return 'review';
 }
 
 function quickScreenshotSrc(check) {
@@ -421,41 +470,110 @@ function buildMissingArtifactHtml(report) {
   const failCount = Number.isFinite(Number(report.fail_count)) ? Number(report.fail_count) : 0;
   const generated = report.created_at || report.execution_date || '';
   const expectedPaths = [report.pdf_path, report.report_html].filter(Boolean);
-  const pathRows = expectedPaths.map((pathValue) => `<li>${htmlEscape(pathValue)}</li>`).join('');
+  const pathRows = expectedPaths.map((pathValue) => `<li><code>${htmlEscape(pathValue)}</code></li>`).join('');
 
   return `<!doctype html>
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Report Artifact Missing - #${htmlEscape(report.id)}</title>
+  <title>Report #${htmlEscape(report.id)} - QA Testing Portal</title>
   <style>
-    body{font-family:Arial,Helvetica,sans-serif;margin:28px;color:#111827;background:#fff;line-height:1.5;}
-    .cover{border:1px solid #d8dee9;border-left:5px solid #b42318;border-radius:8px;padding:18px;margin-bottom:18px;}
-    h1{font-size:24px;margin:0 0 8px;color:#111827;}
-    h2{font-size:17px;margin:22px 0 10px;color:#111827;}
-    .meta{color:#667085;margin-top:8px;}
-    .summary{display:flex;gap:12px;flex-wrap:wrap;margin:16px 0;}
-    .card{border:1px solid #d8dee9;border-radius:8px;padding:12px;min-width:130px;background:#f8fafc;}
-    .card span{display:block;color:#667085;font-size:11px;text-transform:uppercase;font-weight:700;}
-    .card strong{display:block;font-size:22px;margin-top:4px;}
-    .notice{border:1px solid #fecdca;background:#fff7f6;border-radius:8px;padding:14px;color:#7a271a;}
-    ul{margin:8px 0 0 20px;padding:0;overflow-wrap:anywhere;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:#f9fafb;color:#1f2937;line-height:1.6;}
+    .container{max-width:900px;margin:0 auto;padding:20px;}
+    .header{background:#fff;border-bottom:1px solid #e5e7eb;padding:24px 0;margin-bottom:24px;text-align:center;}
+    .header h1{font-size:32px;font-weight:700;color:#111827;margin-bottom:8px;}
+    .header .subtitle{color:#6b7280;font-size:14px;}
+    .cover{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:24px;margin-bottom:24px;box-shadow:0 1px 3px 0 rgba(0,0,0,0.1);}
+    .cover-title{font-size:20px;font-weight:700;color:#111827;margin-bottom:12px;}
+    .meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:16px;}
+    .meta-item{padding:12px;background:#f9fafb;border-radius:8px;border-left:4px solid #0f766e;}
+    .meta-label{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#6b7280;font-weight:600;margin-bottom:4px;}
+    .meta-value{font-size:14px;color:#1f2937;word-break:break-all;}
+    .summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-bottom:24px;}
+    .card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:20px;text-align:center;box-shadow:0 1px 2px 0 rgba(0,0,0,0.05);}
+    .card-value{font-size:36px;font-weight:700;color:#0f766e;margin-bottom:8px;}
+    .card-label{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:#6b7280;font-weight:600;}
+    .alert{background:#fef2f2;border:1px solid #fecaca;border-radius:12px;padding:20px;margin-bottom:24px;}
+    .alert-title{font-size:16px;font-weight:700;color:#dc2626;margin-bottom:12px;}
+    .alert-message{color:#991b1b;margin-bottom:12px;font-size:14px;line-height:1.6;}
+    .paths-list{background:#fff;padding:12px;border-radius:8px;margin-top:12px;}
+    .paths-list code{background:#f3f4f6;padding:2px 6px;border-radius:4px;font-family:"Courier New",monospace;font-size:12px;color:#374151;}
+    .paths-list li{margin:6px 0;padding-left:20px;}
+    .footer{text-align:center;color:#6b7280;font-size:12px;margin-top:32px;padding-top:24px;border-top:1px solid #e5e7eb;}
   </style>
 </head>
 <body>
-  <section class="cover">
-    <h1>Report #${htmlEscape(report.id)} - ${htmlEscape(type)}</h1>
-    <div class="meta">Offer: ${htmlEscape(report.offer_name || type)}<br>URL: ${htmlEscape(report.test_link || '-')}<br>Browser: ${htmlEscape(report.browser_name || '-')}<br>Status: ${htmlEscape(report.status || 'Completed')}<br>Created: ${htmlEscape(generated || '-')}</div>
-  </section>
-  <div class="summary">
-    <div class="card"><span>Passed</span><strong>${passCount}</strong></div>
-    <div class="card"><span>Failed</span><strong>${failCount}</strong></div>
+  <div class="container">
+    <div class="header">
+      <h1>QA Test Report</h1>
+      <div class="subtitle">Report ID #${htmlEscape(report.id)}</div>
+    </div>
+
+    <div class="cover">
+      <div class="cover-title">${htmlEscape(type)}</div>
+      <div class="meta-grid">
+        <div class="meta-item">
+          <div class="meta-label">Report Type</div>
+          <div class="meta-value">${htmlEscape(type)}</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Offer/URL</div>
+          <div class="meta-value">${htmlEscape(report.offer_name || report.test_link || type)}</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Browser</div>
+          <div class="meta-value">${htmlEscape(report.browser_name || '-')}</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Status</div>
+          <div class="meta-value">${htmlEscape(report.status || 'Completed')}</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Generated</div>
+          <div class="meta-value">${htmlEscape(generated || '-')}</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Test Link</div>
+          <div class="meta-value" style="word-break:break-word;font-size:13px;">${htmlEscape(report.test_link || '-')}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary">
+      <div class="card">
+        <div class="card-value">${passCount}</div>
+        <div class="card-label">Passed</div>
+      </div>
+      <div class="card">
+        <div class="card-value" style="color:#dc2626;">${failCount}</div>
+        <div class="card-label">Failed</div>
+      </div>
+      <div class="card">
+        <div class="card-value" style="color:#ea580c;">${passCount + failCount}</div>
+        <div class="card-label">Total Tests</div>
+      </div>
+    </div>
+
+    <div class="alert">
+      <div class="alert-title">⚠️ Report File Not Available</div>
+      <div class="alert-message">The database record exists but the generated report artifact (PDF/HTML) is missing from the server filesystem. This typically occurs during database migrations or deployment when report files are not transferred.</div>
+      ${pathRows ? `<div class="alert-message"><strong>Expected locations:</strong><ul class="paths-list">${pathRows}</ul></div>` : ''}
+      <div style="margin-top:16px;padding-top:16px;border-top:1px solid #fecaca;">
+        <strong style="color:#991b1b;">Recommended Actions:</strong>
+        <ul style="margin-top:8px;margin-left:20px;">
+          <li>Verify report files exist on the server</li>
+          <li>Check server filesystem permissions</li>
+          <li>Contact system administrator if files are permanently lost</li>
+          <li>Re-run the automation to generate a fresh report</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>QA Testing Portal • Report generated on ${new Date().toLocaleString()}</p>
+    </div>
   </div>
-  <section class="notice">
-    <h2>Original report file is not available on this server</h2>
-    <p>The database record exists, but the generated PDF/HTML artifact is missing from the staging filesystem. This usually happens when database rows are copied or deployed without the generated report files.</p>
-    ${pathRows ? `<p><strong>Expected artifact path(s):</strong></p><ul>${pathRows}</ul>` : ''}
-  </section>
 </body>
 </html>`;
 }
@@ -474,6 +592,25 @@ function buildQuickReportHtml({ runId, baseUrl, checks }) {
   const passedCount = checks.filter((item) => String(item.status).toUpperCase() === 'PASS').length;
   const failedCount = checks.filter((item) => String(item.status).toUpperCase() === 'FAIL').length;
   const reviewCount = Math.max(checks.length - passedCount - failedCount, 0);
+  const passRate = checks.length ? Math.round((passedCount / checks.length) * 100) : 0;
+  const categories = Array.from(new Set(checks.map(quickCategory)));
+  const categoryRows = categories.map((category) => {
+    const items = checks.filter((check) => quickCategory(check) === category);
+    const pass = items.filter((item) => String(item.status).toUpperCase() === 'PASS').length;
+    const fail = items.filter((item) => String(item.status).toUpperCase() === 'FAIL').length;
+    const review = Math.max(items.length - pass - fail, 0);
+    const rate = items.length ? Math.round((pass / items.length) * 100) : 0;
+    return `
+      <tr>
+        <td>${htmlEscape(category)}</td>
+        <td>${items.length}</td>
+        <td><span class="pass">${pass}</span></td>
+        <td><span class="fail">${fail}</span></td>
+        <td>${review}</td>
+        <td><div class="bar"><span style="width:${rate}%"></span></div><strong>${rate}%</strong></td>
+      </tr>
+    `;
+  }).join('');
   const issueRows = checks
     .filter((check) => String(check.status || '').toUpperCase() === 'FAIL')
     .map((check, index) => {
@@ -494,15 +631,38 @@ function buildQuickReportHtml({ runId, baseUrl, checks }) {
       </section>
     `;
     }).join('');
-  const rows = checks.map((check) => {
+  const rows = checks.map((check, index) => {
     const screenshot = quickScreenshotSrc(check);
+    const testStepText = describeQuickStep(check, baseUrl);
+    const testDescText = describeQuickResult(check);
+    const testCaseId = generateTestCaseId(check, index);
+    const testCaseTitle = generateTestCaseTitle(check);
+    const category = quickCategory(check);
+    
     return `
       <tr>
-        <td><span class="badge ${String(check.status).toLowerCase()}">${htmlEscape(check.status)}</span></td>
-        <td><strong>Test step:</strong> ${htmlEscape(describeQuickStep(check, baseUrl))}</td>
-        <td><strong>Test description:</strong> ${htmlEscape(describeQuickResult(check))}</td>
+        <td>
+          <div style="margin-bottom: 8px;">
+            <span class="badge" style="background: #f3f4f6; color: #374151; font-size: 11px; padding: 4px 8px; border-radius: 4px; font-weight: 600;">${htmlEscape(testCaseId)}</span>
+          </div>
+          <strong style="font-size: 14px; color: #111827;">${htmlEscape(testCaseTitle)}</strong>
+          <div style="margin-top: 6px; font-size: 12px; color: #6b7280;">[${htmlEscape(category)}]</div>
+        </td>
+        <td style="text-align: center;">
+          <span class="badge ${quickStatusClass(check.status)}" style="font-size: 12px; padding: 6px 12px;">${htmlEscape(check.status)}</span>
+        </td>
+        <td style="max-width: 600px;">
+          <div style="margin-bottom: 12px; padding: 12px; background: #f9fafb; border-left: 3px solid #0f766e; border-radius: 4px;">
+            <p style="margin: 0 0 8px 0; font-size: 12px; color: #6b7280; text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em;">Test Step</p>
+            <p style="margin: 0; font-size: 13px; color: #374151; line-height: 1.6; white-space: pre-wrap;">${htmlEscape(testStepText)}</p>
+          </div>
+          <div style="margin-bottom: 12px; padding: 12px; background: #fef9f3; border-left: 3px solid #ea580c; border-radius: 4px;">
+            <p style="margin: 0 0 8px 0; font-size: 12px; color: #6b7280; text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em;">Test Description</p>
+            <p style="margin: 0; font-size: 13px; color: #374151; line-height: 1.6; white-space: pre-wrap;">${htmlEscape(testDescText)}</p>
+          </div>
+          ${screenshot ? `<div class="screenshot-frame" style="margin-top: 12px;"><img class="report-screenshot" src="${htmlEscape(screenshot)}" alt="Test screenshot"></div>` : ''}
+        </td>
       </tr>
-      ${screenshot ? `<tr class="screenshot-row"><td colspan="3"><div class="screenshot-frame"><img class="report-screenshot" src="${htmlEscape(screenshot)}" alt=""></div></td></tr>` : ''}
     `;
   }).join('');
 
@@ -510,55 +670,344 @@ function buildQuickReportHtml({ runId, baseUrl, checks }) {
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Quick Check Report - ${htmlEscape(runId)}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quick Check QA Report - ${htmlEscape(runId)}</title>
   <style>
-    body{font-family:Arial,Helvetica,sans-serif;margin:28px;color:#111827;background:#fff;line-height:1.45;}
-    h1{font-size:26px;margin:0 0 6px;color:#0f172a;}
-    h2{font-size:17px;margin:24px 0 10px;color:#0f172a;border-bottom:1px solid #d8dee9;padding-bottom:6px;}
-    .cover{border:1px solid #d8dee9;border-left:5px solid #0f766e;border-radius:8px;padding:18px;margin-bottom:18px;}
-    .meta{color:#667085;margin-top:8px;}
-    .summary{display:flex;gap:12px;margin:18px 0;flex-wrap:wrap;}
-    .card{border:1px solid #d8dee9;border-radius:8px;padding:12px;min-width:130px;background:#f8fafc;}
-    .card span{display:block;color:#667085;font-size:11px;text-transform:uppercase;font-weight:700;letter-spacing:.04em;}
-    .card strong{font-size:24px;color:#111827;}
-    table{width:100%;border-collapse:collapse;font-size:13px;}
-    th,td{border-bottom:1px solid #d8dee9;padding:10px;text-align:left;vertical-align:top;}
-    th{background:#f8fafc;color:#667085;text-transform:uppercase;font-size:11px;}
-    .screenshot-row td{background:#fff;padding:12px 10px 18px;}
-    .screenshot-frame{width:min(100%,560px);margin:8px auto 0;padding:8px;background:#fff;border:1px solid #d8dee9;border-radius:8px;box-sizing:border-box;page-break-inside:avoid;text-align:center;}
-    .report-screenshot{display:inline-block;width:auto;height:auto;max-width:100%;max-height:300px;object-fit:contain;border:0;border-radius:4px;margin:0 auto;}
-    .badge{border-radius:999px;padding:4px 8px;font-weight:700;background:#ecfdf3;color:#067647;}
-    .badge.fail,.badge.failed{background:#fff1f0;color:#b42318;}
-    .issue{border:1px solid #fecdca;background:#fff7f6;border-radius:8px;padding:14px;margin:12px 0;page-break-inside:avoid;}
-    .issue h3{font-size:15px;margin:0 0 8px;color:#b42318;}
-    .issue h3 span{display:block;color:#667085;font-size:12px;margin-top:3px;}
-    .issue p{margin:6px 0;}
-    .step-list{margin:6px 0 8px 18px;padding:0;}
-    .step-list li{margin:4px 0;line-height:1.45;}
-    .note{color:#475467;font-size:13px;margin:8px 0 0;}
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: #f9fafb;
+      color: #1f2937;
+      line-height: 1.6;
+    }
+    .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+    
+    /* Header */
+    .page-header {
+      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+      color: #fff;
+      padding: 32px 0;
+      margin-bottom: 32px;
+      text-align: center;
+      border-radius: 0 0 12px 12px;
+      box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.1);
+    }
+    .page-header h1 {
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .page-header .subtitle {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+    
+    /* Cover Section */
+    .cover {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    }
+    .cover h2 { font-size: 20px; font-weight: 700; color: #111827; margin-bottom: 16px; }
+    .cover-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .cover-item {
+      padding: 12px;
+      background: #f9fafb;
+      border-radius: 8px;
+      border-left: 4px solid #0f766e;
+    }
+    .cover-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; font-weight: 600; margin-bottom: 4px; }
+    .cover-value { font-size: 14px; color: #1f2937; word-break: break-word; }
+    
+    /* Summary Cards */
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+      transition: all 0.2s;
+    }
+    .card:hover { box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.1); }
+    .card-value { font-size: 40px; font-weight: 700; color: #0f766e; margin-bottom: 8px; }
+    .card-label { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; font-weight: 600; }
+    .card.score { background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%); color: #fff; }
+    .card.score .card-value, .card.score .card-label { color: #fff; }
+    
+    /* Section Headers */
+    h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #111827;
+      margin: 32px 0 16px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+    
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+      margin-bottom: 24px;
+    }
+    th {
+      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+      color: #fff;
+      text-transform: uppercase;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      padding: 14px 12px;
+      text-align: left;
+      border-bottom: 2px solid #0d5d58;
+    }
+    td {
+      padding: 16px 12px;
+      border-bottom: 1px solid #e5e7eb;
+      vertical-align: top;
+    }
+    td p { margin: 0; font-size: 13px; line-height: 1.5; }
+    tr:last-child td { border-bottom: none; }
+    tbody tr:nth-child(odd) { background: #f9fafb; }
+    tbody tr:hover { background: #f3f4f6; box-shadow: inset 0 0 0 1px #e5e7eb; }
+    
+    /* Test case styling */
+    .test-case-id { 
+      display: inline-block; 
+      background: #e0f2fe; 
+      color: #0369a1; 
+      padding: 4px 8px; 
+      border-radius: 4px; 
+      font-size: 11px; 
+      font-weight: 600; 
+      margin-right: 8px;
+    }
+    
+    /* Badges */
+    .badge {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-weight: 600;
+      font-size: 12px;
+    }
+    .badge.pass { background: #dcfce7; color: #166534; }
+    .badge.fail { background: #fee2e2; color: #991b1b; }
+    .badge.review { background: #fef3c7; color: #92400e; }
+    .pass { color: #166534; font-weight: 600; }
+    .fail { color: #991b1b; font-weight: 600; }
+    
+    /* Progress Bar */
+    .bar {
+      height: 8px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      overflow: hidden;
+      min-width: 60px;
+      margin-bottom: 4px;
+    }
+    .bar span { display: block; height: 100%; background: linear-gradient(90deg, #0f766e, #14b8a6); border-radius: 999px; }
+    
+    /* Issues */
+    .issue {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-left: 4px solid #dc2626;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 16px;
+      page-break-inside: avoid;
+    }
+    .issue h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: #991b1b;
+      margin-bottom: 8px;
+    }
+    .issue h3 .severity {
+      display: block;
+      color: #7c2d12;
+      font-size: 12px;
+      font-weight: 500;
+      margin-top: 4px;
+    }
+    .issue p { margin: 8px 0; font-size: 14px; }
+    .issue strong { color: #1f2937; font-weight: 600; }
+    .step-list { margin: 8px 0 12px 20px; padding: 0; }
+    .step-list li { margin: 4px 0; }
+    
+    /* Screenshots */
+    .screenshot-frame {
+      width: min(100%, 100%);
+      margin: 12px 0 0 0;
+      padding: 8px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      text-align: center;
+      page-break-inside: avoid;
+    }
+    .report-screenshot {
+      display: inline-block;
+      width: auto;
+      height: auto;
+      max-width: 100%;
+      max-height: 800px;
+      object-fit: contain;
+      border-radius: 4px;
+    }
+    .screenshot-row td { background: #f9fafb; padding: 16px 12px; }
+    
+    /* Footer */
+    .footer {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid #e5e7eb;
+      text-align: center;
+      color: #6b7280;
+      font-size: 12px;
+    }
+    
+    /* Print Styles */
+    @media print {
+      body { background: #fff; }
+      .page-header { page-break-after: avoid; }
+      .summary { grid-template-columns: repeat(5, 1fr); page-break-inside: avoid; }
+      table { page-break-inside: avoid; }
+      .issue { page-break-inside: avoid; }
+      .screenshot-frame { max-height: 300px; overflow: hidden; }
+    }
   </style>
 </head>
 <body>
-  <section class="cover">
-    <h1>Quick Check Test Report</h1>
-    <div class="meta">Run ID: ${htmlEscape(runId)}<br>Test URL: ${htmlEscape(baseUrl)}<br>Generated: ${new Date().toLocaleString()}<br>Prepared by: QA Testing Portal</div>
-    <p class="note">This report summarizes automated form validation checks, observed behavior, and screenshot evidence for management review.</p>
-  </section>
-  <div class="summary">
-    <div class="card"><span>Total</span><strong>${checks.length}</strong></div>
-    <div class="card"><span>Passed</span><strong>${passedCount}</strong></div>
-    <div class="card"><span>Failed</span><strong>${failedCount}</strong></div>
-    <div class="card"><span>Review</span><strong>${reviewCount}</strong></div>
+  <div class="page-header">
+    <div class="container">
+      <h1>Quick Check QA Report</h1>
+      <div class="subtitle">Automated Form Validation & Compliance Testing</div>
+    </div>
   </div>
-  <h2>Executive Summary</h2>
-  <p>${failedCount > 0 ? `The automation found ${failedCount} issue(s) that require review before release.` : 'No failing validation issues were found in this run.'}</p>
-  <h2>Issue Register</h2>
-  ${issueRows || '<p>No issues found.</p>'}
-  <h2>Detailed Test Results</h2>
-  <table>
-    <thead><tr><th>Status</th><th>Test Step</th><th>Test Description</th></tr></thead>
-    <tbody>${rows || '<tr><td colspan="3">No checks returned.</td></tr>'}</tbody>
-  </table>
+  
+  <div class="container">
+    <div class="cover">
+      <h2>Test Execution Summary</h2>
+      <div class="cover-grid">
+        <div class="cover-item">
+          <div class="cover-label">Run ID</div>
+          <div class="cover-value"><code>${htmlEscape(runId)}</code></div>
+        </div>
+        <div class="cover-item">
+          <div class="cover-label">Test URL</div>
+          <div class="cover-value" style="word-break: break-word; font-size: 13px;">${htmlEscape(baseUrl)}</div>
+        </div>
+        <div class="cover-item">
+          <div class="cover-label">Generated</div>
+          <div class="cover-value">${new Date().toLocaleString()}</div>
+        </div>
+        <div class="cover-item">
+          <div class="cover-label">Total Tests</div>
+          <div class="cover-value">${checks.length}</div>
+        </div>
+        <div class="cover-item">
+          <div class="cover-label">Browser</div>
+          <div class="cover-value">Chromium</div>
+        </div>
+        <div class="cover-item">
+          <div class="cover-label">Environment</div>
+          <div class="cover-value">QA Testing Portal</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary">
+      <div class="card score">
+        <div class="card-value">${passRate}%</div>
+        <div class="card-label">QA Score</div>
+      </div>
+      <div class="card">
+        <div class="card-value">${checks.length}</div>
+        <div class="card-label">Total</div>
+      </div>
+      <div class="card">
+        <div class="card-value" style="color: #166534;">${passedCount}</div>
+        <div class="card-label">Passed</div>
+      </div>
+      <div class="card">
+        <div class="card-value" style="color: #991b1b;">${failedCount}</div>
+        <div class="card-label">Failed</div>
+      </div>
+      <div class="card">
+        <div class="card-value" style="color: #92400e;">${reviewCount}</div>
+        <div class="card-label">Review</div>
+      </div>
+    </div>
+
+    <h2>Executive Summary</h2>
+    <p style="font-size: 15px; line-height: 1.6; margin-bottom: 16px;">
+      ${failedCount > 0 
+        ? `<strong>Status: Issues Identified</strong> — The automated testing identified <strong>${failedCount}</strong> validation issue(s) requiring attention. The overall QA score is <strong>${passRate}%</strong>. Please review the Issue Register below for details and recommended actions.`
+        : `<strong>Status: All Clear</strong> — No failing validation issues were detected in this automated run. All ${checks.length} tests passed successfully. The overall QA score is <strong>${passRate}%</strong>.`
+      }
+    </p>
+
+    <h2>QA Coverage by Category</h2>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 25%;">Test Area</th>
+          <th style="width: 12%;">Total</th>
+          <th style="width: 12%;">Passed</th>
+          <th style="width: 12%;">Failed</th>
+          <th style="width: 12%;">Review</th>
+          <th style="width: 27%;">Pass Rate</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${categoryRows || '<tr><td colspan="6">No coverage data available.</td></tr>'}
+      </tbody>
+    </table>
+
+    ${issueRows ? `<h2>Issue Register</h2>${issueRows}` : ''}
+
+    <h2>Detailed Test Results</h2>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 25%;">Test Case ID & Title</th>
+          <th style="width: 12%;">Result</th>
+          <th style="width: 63%;">Test Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows || '<tr><td colspan="3"><p style="text-align: center; color: #6b7280;">No test results available.</p></td></tr>'}
+      </tbody>
+    </table>
+
+    <div class="footer">
+      <p><strong>QA Testing Portal</strong> • Confidential Report</p>
+      <p style="margin-top: 8px; font-size: 11px; color: #9ca3af;">Generated: ${new Date().toLocaleString()} • For Management Review</p>
+    </div>
+  </div>
 </body>
 </html>`;
 }

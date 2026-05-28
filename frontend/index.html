@@ -240,6 +240,11 @@
 
     .page-title {
       margin-bottom: 18px;
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--accent);
+      border-radius: var(--radius);
+      background: linear-gradient(90deg, #ffffff, #f7fbff);
+      padding: 16px 18px;
     }
 
     .page-title h2 {
@@ -374,6 +379,74 @@
       gap: 12px;
     }
 
+    .guide-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .flow-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .flow-card {
+      border: 1px solid var(--line);
+      border-top: 3px solid var(--accent);
+      border-radius: 8px;
+      background: linear-gradient(180deg, #fff, #fbfdff);
+      padding: 14px;
+      min-height: 118px;
+    }
+
+    .flow-card strong {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .flow-card p,
+    .guide-list li {
+      color: #475467;
+    }
+
+    .guide-list li {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: linear-gradient(180deg, #fff, #fbfdff);
+      padding: 11px 12px;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .guide-list strong {
+      color: #344054;
+      display: block;
+      font-size: 12px;
+      margin-bottom: 3px;
+      text-transform: uppercase;
+    }
+
+    .download-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fafc;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px;
+    }
+
+    .download-card p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
     .setup-item {
       border: 1px solid var(--line);
       border-radius: 8px;
@@ -414,7 +487,7 @@
     .panel-header {
       padding: 14px 16px;
       border-bottom: 1px solid var(--line);
-      background: var(--surface-soft);
+      background: linear-gradient(90deg, #f8fafc, #eef6ff);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -488,10 +561,6 @@
     textarea {
       min-height: 112px;
       resize: vertical;
-    }
-
-    .csv-editor.file-loaded textarea {
-      display: none;
     }
 
     .csv-drop {
@@ -954,6 +1023,7 @@
       }
 
       .stats-grid,
+      .flow-grid,
       .workspace-grid,
       .workspace-grid.single,
       .field-grid,
@@ -1052,6 +1122,27 @@
           <div class="page-title">
             <p class="helper-text">Track automation runs, generated reports, and quick validation results.</p>
           </div>
+          <div class="panel">
+            <div class="panel-header">
+              <h3><span class="icon">WF</span> Portal Workflow</h3>
+            </div>
+            <div class="panel-body">
+              <div class="flow-grid">
+                <div class="flow-card">
+                  <strong>1. Prepare Input</strong>
+                  <p>Choose the section, add the target URL, and upload the CSV when the 88startech flow needs order data.</p>
+                </div>
+                <div class="flow-card">
+                  <strong>2. Run Automation</strong>
+                  <p>The portal starts the selected browser flow, tracks active runs, and keeps the page available while tests execute.</p>
+                </div>
+                <div class="flow-card">
+                  <strong>3. Review Results</strong>
+                  <p>Open saved reports to inspect pass/fail counts, screenshots, field checks, and downloadable artifacts.</p>
+                </div>
+              </div>
+            </div>
+          </div>
           <div class="stats-grid">
             <div class="stat-card">
               <span>Total Reports</span>
@@ -1106,7 +1197,7 @@
 
         <section id="orderSection" class="portal-section hidden">
           <div class="page-title">
-            <p class="helper-text">Upload an order CSV, run the Playwright flow, then review generated reports.</p>
+            <p class="helper-text">Upload an order CSV, run the Playwright flow, then review pass/fail results, screenshots, and generated report files.</p>
           </div>
           <div class="workspace-grid single">
             <section class="panel">
@@ -1149,9 +1240,15 @@
                         <p id="csvFileName" class="helper-text" style="margin-top: 9px;">No CSV selected.</p>
                       </div>
                     </div>
-                    <div class="field full csv-editor" id="csvEditor">
-                      <label for="csvContent">CSV Header or Manual CSV</label>
-                      <textarea id="csvContent" name="csvContent" placeholder="first name,lname,phone number,email,address,city,zipcode,card number"></textarea>
+                    <div class="field full">
+                      <label>Sample CSV</label>
+                      <div class="download-card">
+                        <p>Download the sample, keep the same column names, add your order rows, then upload the completed CSV.</p>
+                        <a id="downloadSampleCsv" class="action-link light" href="#" download="88startech-sample-orders.csv">Download CSV</a>
+                      </div>
+                    </div>
+                    <div class="field full csv-editor hidden" id="csvEditor">
+                      <label>Uploaded CSV Preview</label>
                       <div id="csvPreview" class="csv-preview hidden"></div>
                     </div>
                   </div>
@@ -1167,6 +1264,11 @@
                   <h3><span class="icon">ST</span> Run Setup</h3>
                 </div>
                 <div class="panel-body setup-list">
+                  <ul class="guide-list">
+                    <li><strong>What to do</strong> Confirm the URL opens the correct offer page, select the browser, download the sample CSV if needed, then upload the completed order CSV.</li>
+                    <li><strong>CSV columns</strong> Required: first name, lname, phone number, address, city, zipcode, card number. Optional: email.</li>
+                    <li><strong>Result</strong> Each completed run appears in 88startech Reports with pass/fail counts plus view and download actions.</li>
+                  </ul>
                   <div class="setup-item">
                     <span>CSV</span>
                     <strong id="setupCsv" title="No CSV selected">No CSV selected</strong>
@@ -1213,7 +1315,7 @@
 
         <section id="quickSection" class="portal-section hidden">
           <div class="page-title">
-            <p class="helper-text">Run quick form validation checks and review their report output separately.</p>
+            <p class="helper-text">Enter a page URL to run quick form validation checks and save a focused Quick Check report.</p>
           </div>
           <div class="workspace-grid">
             <section class="panel">
@@ -1221,6 +1323,10 @@
                 <h3><span class="icon">QC</span> Run Quick Check</h3>
               </div>
               <div class="panel-body">
+                <ul class="guide-list" style="margin-bottom: 14px;">
+                  <li><strong>What to do</strong> Paste the page URL you want to validate, then start the quick check.</li>
+                  <li><strong>Result</strong> The latest run shows field-level statuses here and saves a report in Quick Check Reports.</li>
+                </ul>
                 <form id="quickForm">
                   <div class="field">
                     <label for="quickUrl">Page URL</label>
@@ -1278,11 +1384,17 @@
 
         <section id="reportsSection" class="portal-section hidden">
           <div class="page-title">
-            <p class="helper-text">View, download, or delete reports generated by any automation section.</p>
+            <p class="helper-text">Find every saved 88startech and Quick Check result, then view, download, or delete report artifacts.</p>
           </div>
           <section class="panel">
             <div class="panel-header">
               <h3><span class="icon">LB</span> Report Library</h3>
+            </div>
+            <div class="panel-body">
+              <ul class="guide-list">
+                <li><strong>What to do</strong> Search by ID, offer, URL, browser, or run id; filter by type, browser, result, and date range.</li>
+                <li><strong>Result</strong> Open the generated report, download the artifact, compare pass/fail counts, or remove old records.</li>
+              </ul>
             </div>
             <div class="report-controls">
               <div class="report-filter-grid">
@@ -1405,6 +1517,10 @@
     const setupBrowser = document.getElementById('setupBrowser');
     const setupMode = document.getElementById('setupMode');
     const setupStatus = document.getElementById('setupStatus');
+    const sampleCsv = `first name,lname,phone number,email,address,city,zipcode,card number
+John,Doe,5551234567,john@example.com,"123 Test Street",New York,10001,1444444444444440
+Jane,Smith,5559876543,jane@example.com,"456 Demo Avenue",Chicago,60601,1444444444444443`;
+    let selectedOrderCsv = '';
 
     function setMessage(node, message, isError = false) {
       node.textContent = message;
@@ -1674,10 +1790,10 @@
       form.reset();
       document.getElementById('csvFile').value = '';
       document.getElementById('csvFileName').textContent = 'No CSV selected.';
-      document.getElementById('csvContent').value = '';
       document.getElementById('csvPreview').innerHTML = '';
       document.getElementById('csvPreview').classList.add('hidden');
-      csvEditor.classList.remove('file-loaded');
+      csvEditor.classList.add('hidden');
+      selectedOrderCsv = '';
       updateSetupSummary();
     }
 
@@ -1873,7 +1989,7 @@
         throw new Error('CSV must include a header row and at least one order row.');
       }
       const headers = rows[0].map((item) => item.toLowerCase().replace(/[^a-z0-9]+/g, ''));
-      const required = ['firstname', 'lname', 'phonenumber', 'city', 'zipcode', 'cardnumber'];
+      const required = ['firstname', 'lname', 'phonenumber', 'address', 'city', 'zipcode', 'cardnumber'];
       const missing = required.filter((item) => !headers.includes(item));
       if (missing.length) {
         throw new Error(`CSV is missing required column(s): ${missing.join(', ')}`);
@@ -1884,6 +2000,7 @@
       const rows = parseCsvPreview(csv);
       const preview = document.getElementById('csvPreview');
       preview.classList.toggle('hidden', rows.length === 0);
+      csvEditor.classList.toggle('hidden', rows.length === 0);
       if (rows.length === 0) {
         preview.innerHTML = '';
         return;
@@ -1903,13 +2020,19 @@
       const file = document.getElementById('csvFile').files?.[0];
       const browser = document.getElementById('browser');
       const mode = document.getElementById('headlessMode').checked ? 'Headless' : 'Headed';
-      const csvLabel = file ? file.name : 'Manual CSV';
+      const csvLabel = file ? file.name : 'Upload required';
       setupCsv.textContent = csvLabel;
       setupCsv.title = csvLabel;
       setupBrowser.textContent = browser.selectedOptions[0]?.textContent || 'Select a browser';
       setupBrowser.title = setupBrowser.textContent;
       setupMode.textContent = mode;
       setupMode.title = mode;
+    }
+
+    function setupSampleCsvDownload() {
+      const link = document.getElementById('downloadSampleCsv');
+      const blob = new Blob([sampleCsv], { type: 'text/csv;charset=utf-8' });
+      link.href = URL.createObjectURL(blob);
     }
 
     document.getElementById('loginForm').addEventListener('submit', async (event) => {
@@ -1947,21 +2070,12 @@
       const file = event.target.files?.[0];
       document.getElementById('csvFileName').textContent = file ? `${file.name} selected` : 'No CSV selected.';
       if (file) {
-        const csv = await readCsvFile(file);
-        document.getElementById('csvContent').value = csv;
-        csvEditor.classList.add('file-loaded');
-        renderCsvPreview(csv);
+        selectedOrderCsv = await readCsvFile(file);
+        renderCsvPreview(selectedOrderCsv);
       } else {
-        csvEditor.classList.remove('file-loaded');
+        selectedOrderCsv = '';
+        renderCsvPreview('');
       }
-      updateSetupSummary();
-    });
-
-    document.getElementById('csvContent').addEventListener('input', (event) => {
-      if (!document.getElementById('csvFile').files?.[0]) {
-        csvEditor.classList.remove('file-loaded');
-      }
-      renderCsvPreview(event.target.value);
       updateSetupSummary();
     });
 
@@ -1984,9 +2098,9 @@
       const form = new FormData(event.currentTarget);
       const file = document.getElementById('csvFile').files?.[0];
       try {
-        const csvContent = file ? await readCsvFile(file) : form.get('csvContent');
+        const csvContent = file ? selectedOrderCsv || await readCsvFile(file) : '';
         if (!csvContent || !String(csvContent).trim()) {
-          throw new Error('Upload a CSV file or paste CSV content before running automation.');
+          throw new Error('Upload an order CSV before running 88startech automation.');
         }
         validateOrderCsv(csvContent);
         const data = await api('/api/run-automation', {
@@ -2170,6 +2284,7 @@
       renderSession();
     });
 
+    setupSampleCsvDownload();
     renderSession();
     showSection('dashboardSection');
     if (state.token) {

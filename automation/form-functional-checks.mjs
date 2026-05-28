@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import fs from 'fs';
 import path from 'path';
 import { chromium } from 'playwright';
@@ -31,6 +32,15 @@ function logEntry(results, label, status, detail, screenshotPath = '') {
     }
     results.push(entry);
     console.log(`[${status}] ${label} - ${detail}`);
+}
+
+function logPageEntry(results, pageEntry, label, status, detail, screenshotPath = '') {
+    const before = results.length;
+    logEntry(results, label, status, detail, screenshotPath);
+    if (results.length > before) {
+        results[results.length - 1].pageUrl = pageEntry.url;
+        results[results.length - 1].pageLabel = pageEntry.label || 'Test Page';
+    }
 }
 
 function safeFilePart(value) {
@@ -425,14 +435,15 @@ function classifyDynamicField(attrs) {
     if (/card|ccnum|cc-number|credit|debit|accountnumber/.test(descriptor)) {
         return 'card';
     }
-    if (/phone|mobile|tel/.test(descriptor) || type === 'tel') {
-        return 'phone';
-    }
+    // Check ZIP before PHONE since some fields might have both keywords
     if (/billing/.test(descriptor) && /zip|postal|postcode|post code/.test(descriptor)) {
         return 'billing_zip';
     }
     if (/zip|postal|postcode|post code/.test(descriptor)) {
         return 'zip';
+    }
+    if (/phone|mobile|tel/.test(descriptor) || type === 'tel') {
+        return 'phone';
     }
     if (type === 'email') {
         return 'email';
@@ -623,6 +634,16 @@ async function runDynamicFieldRuleChecks(page, formLocator, formIndex, fields, r
         const fieldName = field.label || field.name || field.id || `${field.tag} ${field.index + 1}`;
 
         if (kind === 'phone') {
+            const tenDigitTest = await testInputValueRule(locator, '1234567890');
+            const tenDigits = tenDigitTest.value.replace(/\D/g, '');
+            logEntry(
+                results,
+                `Form ${formIndex + 1} - Phone accepts 10 digits for ${fieldName}`,
+                tenDigits.length === 10 ? 'PASS' : 'FAIL',
+                `${tenDigitTest.detail}, digits=${tenDigits.length}`,
+                await captureCheckScreenshot(page, reportPath, `form_${formIndex + 1}_phone_10_digits_${fieldName}`)
+            );
+
             const characterTest = await testInputValueRule(locator, 'abcXYZ');
             const characterAccepted = /[a-z]/i.test(characterTest.value);
             const characterScreenshot = await captureCheckScreenshot(page, reportPath, `form_${formIndex + 1}_phone_character_${fieldName}`);
@@ -648,6 +669,26 @@ async function runDynamicFieldRuleChecks(page, formLocator, formIndex, fields, r
         }
 
         if (kind === 'zip' || kind === 'billing_zip') {
+            const zipCharacterTest = await testInputValueRule(locator, 'abc12');
+            const characterAccepted = /[a-z]/i.test(zipCharacterTest.value);
+            logEntry(
+                results,
+                `Form ${formIndex + 1} - ${kind === 'billing_zip' ? 'Billing ZIP' : 'ZIP'} rejects characters for ${fieldName}`,
+                characterAccepted ? 'FAIL' : 'PASS',
+                zipCharacterTest.detail,
+                await captureCheckScreenshot(page, reportPath, `form_${formIndex + 1}_zip_character_${fieldName}`)
+            );
+
+            const fiveDigitTest = await testInputValueRule(locator, '12345');
+            const fiveDigits = fiveDigitTest.value.replace(/\D/g, '');
+            logEntry(
+                results,
+                `Form ${formIndex + 1} - ${kind === 'billing_zip' ? 'Billing ZIP' : 'ZIP'} accepts 5 digits for ${fieldName}`,
+                fiveDigits.length === 5 ? 'PASS' : 'FAIL',
+                `${fiveDigitTest.detail}, digits=${fiveDigits.length}`,
+                await captureCheckScreenshot(page, reportPath, `form_${formIndex + 1}_zip_5_digits_${fieldName}`)
+            );
+
             const zipTest = await testInputValueRule(locator, '123456');
             const digits = zipTest.value.replace(/\D/g, '');
             const tooLongAccepted = digits.length > 5;
@@ -691,6 +732,28 @@ async function runDynamicFieldRuleChecks(page, formLocator, formIndex, fields, r
                 tooLongAccepted ? 'FAIL' : 'PASS',
                 `${seventeenDigitTest.detail}, digits=${seventeenDigits.length}`,
                 await captureCheckScreenshot(page, reportPath, `form_${formIndex + 1}_card_17_digits_${fieldName}`)
+            );
+        }
+
+        if (kind === 'cvv') {
+            const threeDigitTest = await testInputValueRule(locator, '123');
+            const threeDigits = threeDigitTest.value.replace(/\D/g, '');
+            logEntry(
+                results,
+                `Form ${formIndex + 1} - CVV accepts 3 digits for ${fieldName}`,
+                threeDigits.length === 3 ? 'PASS' : 'FAIL',
+                `${threeDigitTest.detail}, digits=${threeDigits.length}`,
+                await captureCheckScreenshot(page, reportPath, `form_${formIndex + 1}_cvv_3_digits_${fieldName}`)
+            );
+
+            const fourDigitTest = await testInputValueRule(locator, '1234');
+            const fourDigits = fourDigitTest.value.replace(/\D/g, '');
+            logEntry(
+                results,
+                `Form ${formIndex + 1} - CVV max 3 digits for ${fieldName}`,
+                fourDigits.length > 3 ? 'FAIL' : 'PASS',
+                `${fourDigitTest.detail}, digits=${fourDigits.length}`,
+                await captureCheckScreenshot(page, reportPath, `form_${formIndex + 1}_cvv_4_digits_${fieldName}`)
             );
         }
 
@@ -740,6 +803,81 @@ async function runDynamicCheckboxChecks(page, formLocator, formIndex, fields, re
             screenshotPath
         );
     }
+}
+
+async function runGeminiContentReview(pageEntry, pageSnapshot, results) {
+    // Gemini content review disabled - user requested removal
+    return;
+}
+
+async function runPageLevelQaChecks(page, pageEntry, results, reportPath) {
+    const snapshot = await page.evaluate(() => {
+        const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 0;
+        const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+        const bodyText = document.body ? document.body.innerText.replace(/\s+/g, ' ').trim() : '';
+        const footerText = Array.from(document.querySelectorAll('footer,[role="contentinfo"],.footer,#footer'))
+            .map((element) => element.innerText || element.textContent || '')
+            .join(' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+        const overflowing = Array.from(document.body ? document.body.querySelectorAll('body *') : [])
+            .map((element) => {
+                const rect = element.getBoundingClientRect();
+                const style = window.getComputedStyle(element);
+                const visible = rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden' && style.display !== 'none';
+                if (!visible) return null;
+                const overflowX = rect.left < -2 || rect.right > viewportWidth + 2;
+                return overflowX ? {
+                    tag: element.tagName.toLowerCase(),
+                    id: element.id || '',
+                    className: String(element.className || '').slice(0, 80),
+                    left: Math.round(rect.left),
+                    right: Math.round(rect.right),
+                    width: Math.round(rect.width)
+                } : null;
+            })
+            .filter(Boolean)
+            .slice(0, 8);
+        const imageIssues = Array.from(document.images || [])
+            .map((image) => {
+                const rect = image.getBoundingClientRect();
+                if (rect.width <= 0 || rect.height <= 0) return null;
+                const outside = rect.left < -2 || rect.right > viewportWidth + 2;
+                const tooLarge = rect.width > viewportWidth;
+                return outside || tooLarge ? {
+                    src: image.currentSrc || image.src || '',
+                    width: Math.round(rect.width),
+                    right: Math.round(rect.right)
+                } : null;
+            })
+            .filter(Boolean)
+            .slice(0, 6);
+        return { viewportWidth, viewportHeight, visibleText: bodyText, footerText, overflowing, imageIssues };
+    });
+
+    const screenshotPath = await captureCheckScreenshot(page, reportPath, `${pageEntry.label}_page_layout_review`);
+    const copyrightText = `${snapshot.footerText} ${snapshot.visibleText}`;
+    const hasCopyright = /(?:copyright|©|all rights reserved)/i.test(copyrightText);
+    logPageEntry(
+        results,
+        pageEntry,
+        `${pageEntry.label} - Footer copyright is present`,
+        hasCopyright ? 'PASS' : 'FAIL',
+        hasCopyright ? 'copyright/footer text detected' : 'copyright text was not detected in footer or page content',
+        screenshotPath
+    );
+
+    const layoutIssues = [...(snapshot.overflowing || []), ...(snapshot.imageIssues || [])];
+    logPageEntry(
+        results,
+        pageEntry,
+        `${pageEntry.label} - Text and image layout fits 100 percent screen width`,
+        layoutIssues.length === 0 ? 'PASS' : 'FAIL',
+        layoutIssues.length === 0
+            ? `no horizontal overflow detected at ${snapshot.viewportWidth}x${snapshot.viewportHeight}`
+            : `horizontal overflow detected: ${JSON.stringify(layoutIssues)}`,
+        screenshotPath
+    );
 }
 
 async function runDynamicFormChecks(page, pageEntry, results, reportPath) {
@@ -965,10 +1103,20 @@ async function main() {
             if (!entry?.url) {
                 continue;
             }
-            await runDynamicFormChecks(page, {
+            const pageEntry = {
                 label: entry.label || 'Quick Test Page',
                 url: entry.url
+            };
+            const beforeCount = results.length;
+            await runDynamicFormChecks(page, {
+                label: pageEntry.label,
+                url: pageEntry.url
             }, results, reportPath);
+            for (const result of results.slice(beforeCount)) {
+                result.pageUrl = result.pageUrl || pageEntry.url;
+                result.pageLabel = result.pageLabel || pageEntry.label;
+            }
+            await runPageLevelQaChecks(page, pageEntry, results, reportPath);
         }
 
         if (config.enableConfiguredChecks) {

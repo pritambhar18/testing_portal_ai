@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import fs from 'fs/promises';
 import path from 'path';
 import { execFile } from 'child_process';
@@ -8,6 +9,7 @@ import { chromium, firefox, webkit } from 'playwright';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const rootDir = path.resolve(__dirname, '..');
 const execFileAsync = promisify(execFile);
 
 function normalizeHeader(value) {
@@ -775,7 +777,7 @@ function createSecurityTasks({ baseUrl, domain, domainRoot, httpUrl }) {
 
   tasks.push({
     id: '01_http2',
-    label: '1. HTTP2 Report Link',
+    label: '1. HTTP2 Check',
     url: 'https://tools.keycdn.com/http2-test',
     referenceUrl: 'https://tools.keycdn.com/http2-test',
     referenceLabel: 'KeyCDN HTTP2 Test',
@@ -792,7 +794,7 @@ function createSecurityTasks({ baseUrl, domain, domainRoot, httpUrl }) {
 
   tasks.push({
     id: '02_https_redirection',
-    label: '2. HTTPS Redirection Report Link',
+    label: '2. HTTPS Redirection Check',
     url: 'https://wheregoes.com/',
     referenceUrl: 'https://wheregoes.com/',
     referenceLabel: 'WhereGoes.com',
@@ -810,7 +812,7 @@ function createSecurityTasks({ baseUrl, domain, domainRoot, httpUrl }) {
 
   tasks.push({
     id: '04_safe_browsing',
-    label: '4. Safe Browsing Site Status Report Link',
+    label: '4. Safe Browsing Site Status Check',
     url: 'https://transparencyreport.google.com/safe-browsing/search?hl=en',
     referenceUrl: 'https://transparencyreport.google.com/safe-browsing/search',
     referenceLabel: 'Google Transparency Report',
@@ -827,7 +829,7 @@ function createSecurityTasks({ baseUrl, domain, domainRoot, httpUrl }) {
 
   tasks.push({
     id: '05_robots',
-    label: '5. Robots.txt Report Link',
+    label: '5. Robots.txt Check',
     url: `https://${domainRoot || domain}/robots.txt`,
     referenceUrl: `https://${domainRoot || domain}/robots.txt`,
     referenceLabel: 'robots.txt',
@@ -846,51 +848,11 @@ function createSecurityTasks({ baseUrl, domain, domainRoot, httpUrl }) {
     },
   });
 
-  tasks.push({
-    id: '06_domain_expiry',
-    label: '6. Domain Expiry check Report Link',
-    url: 'https://www.digicert.com/help/',
-    referenceUrl: 'https://www.digicert.com/help/',
-    referenceLabel: 'Digicert Help',
-    priority: 3,
-    estimatedMs: 20000,
-    heavy: false,
-    action: async ({ page }) => {
-      await securityFill(
-        page,
-        [
-          '#host',
-          "xpath=//input[contains(translate(@name,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'host')]",
-          "xpath=//input[contains(translate(@placeholder,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'host')]",
-          "xpath=//input[contains(translate(@aria-label,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'host')]",
-        ],
-        withoutWwwValue,
-        { timeout: 25000 },
-      );
-      await securityClick(
-        page,
-        [
-          '#check-server-button',
-          "xpath=//button[contains(normalize-space(.),'Check')]",
-          "xpath=//button[contains(normalize-space(.),'Lookup')]",
-          "xpath=//input[@type='submit']",
-        ],
-        { timeout: 25000 },
-      );
-      await page.waitForSelector("xpath=//td[normalize-space()='OCSP Staple:']", { timeout: 30000 });
-      await page.waitForSelector("xpath=//p[contains(text(),'The certificate expires')]", { timeout: 30000 });
-      const expiryText = await page
-        .locator("xpath=//p[contains(text(),'The certificate expires')]")
-        .first()
-        .innerText()
-        .catch(() => '');
-      return { details: expiryText || 'Domain expiry information captured.' };
-    },
-  });
+
 
   tasks.push({
     id: '07_ssllabs',
-    label: '7. SSL Grade Report Link',
+    label: '7. SSL Grade Check',
     url: 'https://www.ssllabs.com/ssltest',
     referenceUrl: 'https://www.ssllabs.com/ssltest',
     referenceLabel: 'SSL Labs',
@@ -919,7 +881,7 @@ function createSecurityTasks({ baseUrl, domain, domainRoot, httpUrl }) {
 
   tasks.push({
     id: '08_pagespeed_mobile',
-    label: '8. Google PageSpeed Mobile Report Link',
+    label: '8. Google PageSpeed Mobile Check',
     url: 'https://pagespeed.web.dev/?utm_source=psi&utm_medium=redirect',
     referenceUrl: 'https://pagespeed.web.dev/',
     referenceLabel: 'PageSpeed Insights',
@@ -938,7 +900,7 @@ function createSecurityTasks({ baseUrl, domain, domainRoot, httpUrl }) {
 
   tasks.push({
     id: '09_pagespeed_desktop',
-    label: '9. Google PageSpeed Desktop Report Link',
+    label: '9. Google PageSpeed Desktop Check',
     url: `https://pagespeed.web.dev/report?url=${encodedTestUrl}`,
     referenceUrl: 'https://pagespeed.web.dev/',
     referenceLabel: 'PageSpeed Insights',
@@ -965,7 +927,7 @@ function createSecurityTasks({ baseUrl, domain, domainRoot, httpUrl }) {
 
   tasks.push({
     id: '10_html_opt',
-    label: '10. HTML Optimisation Report Link',
+    label: '10. HTML Optimisation Check',
     url: 'https://validator.w3.org/nu/',
     referenceUrl: 'https://validator.w3.org/nu/',
     referenceLabel: 'W3C Validator',
@@ -1183,6 +1145,62 @@ async function collectSecurityPerformanceChecks(baseUrl, screenshotDir, reportId
     ...executed,
     ...skipped,
   ];
+}
+
+function functionalScreenshotReportPath(screenshotPath, reportDir) {
+  const normalized = path.resolve(String(screenshotPath || ''));
+  const normalizedReportDir = path.resolve(reportDir);
+  if (!normalized.startsWith(normalizedReportDir)) {
+    return '';
+  }
+
+  return path.relative(normalizedReportDir, normalized).replace(/\\/g, '/');
+}
+
+async function collectFunctionalQaChecks(baseUrl, reportDir, pageEntries = [], logPath = '') {
+  const functionalReportPath = path.join(reportDir, 'functional-checks.json');
+  const runnerPath = path.join(rootDir, 'automation', 'form-functional-checks.mjs');
+  const pages = pageEntries.length > 0
+    ? pageEntries
+    : [{ label: 'Landing Page', url: baseUrl }];
+  const pagesArg = `base64:${Buffer.from(JSON.stringify(pages), 'utf8').toString('base64')}`;
+
+  await appendRunnerLog(logPath, `Functional QA checks started after security/performance checks. pages=${pages.length}.`);
+
+  try {
+    await execFileAsync(
+      process.execPath,
+      [runnerPath, '', baseUrl, functionalReportPath, pagesArg],
+      {
+        cwd: rootDir,
+        env: process.env,
+        windowsHide: true,
+        timeout: Number(process.env.FUNCTIONAL_QA_TIMEOUT_MS || 240000),
+        maxBuffer: 1024 * 1024 * 8,
+      },
+    );
+
+    const raw = await fs.readFile(functionalReportPath, 'utf8');
+    const checks = JSON.parse(raw);
+    await appendRunnerLog(logPath, `Functional QA checks completed. checks=${Array.isArray(checks) ? checks.length : 0}.`);
+
+    return Array.isArray(checks)
+      ? checks.map((check) => ({
+        ...check,
+        screenshotReportPath: functionalScreenshotReportPath(check.screenshot_path, reportDir),
+      }))
+      : [];
+  } catch (error) {
+    const message = sanitizeMessage(error.message || error);
+    await appendRunnerLog(logPath, `Functional QA checks failed: ${message}`);
+    return [{
+      label: 'Functional QA checks',
+      status: 'FAIL',
+      detail: message,
+      screenshotReportPath: '',
+      time: new Date().toISOString(),
+    }];
+  }
 }
 
 async function createIsolatedSession(browserName, headless = false) {
@@ -1515,12 +1533,134 @@ function isThankYouUrl(currentUrl) {
   return /thank-you(?:\.php)?|thankyou|order[_-]?confirmed/i.test(currentUrl);
 }
 
+function normalizeQaUrl(value) {
+  try {
+    const parsed = new URL(String(value || ''));
+    parsed.hash = '';
+    return parsed.toString();
+  } catch (_) {
+    return '';
+  }
+}
+
+function buildFunctionalPageEntries(baseUrl, results) {
+  const entries = [];
+  const seen = new Set();
+  const add = (label, url) => {
+    const normalized = normalizeQaUrl(url);
+    if (!normalized || seen.has(normalized)) {
+      return;
+    }
+    seen.add(normalized);
+    entries.push({ label, url: normalized });
+  };
+
+  add('Landing Page', baseUrl);
+  for (const result of results || []) {
+    for (const page of result.visitedPages || []) {
+      add(page.label || 'Order Flow Page', page.url);
+    }
+  }
+
+  return entries;
+}
+
+function functionalCheckTitle(check) {
+  return escapeHtml(check.label || 'Functional QA check');
+}
+
+function functionalCheckSteps(check, report) {
+  const label = String(check.label || '').toLowerCase();
+  const pageUrl = check.pageUrl || report.url;
+  if (/blank validation/.test(label)) {
+    return [
+      `Open the tested page: ${pageUrl}`,
+      'Locate the relevant form and clear the field value.',
+      'Submit or trigger the form validation without entering data.',
+      'Confirm the field shows a clear required/blank validation message and prevents invalid submission.',
+    ];
+  }
+  if (/phone/.test(label)) {
+    return [
+      `Open the tested page: ${pageUrl}`,
+      'Locate the phone field in the form.',
+      'Enter valid 10-digit data and confirm it is accepted.',
+      'Enter character or more-than-10-digit data and confirm it is blocked or trimmed.',
+    ];
+  }
+  if (/zip/.test(label)) {
+    return [
+      `Open the tested page: ${pageUrl}`,
+      'Locate the shipping or billing ZIP field.',
+      'Enter valid 5-digit data and confirm it is accepted.',
+      'Enter characters or more-than-5-digit data and confirm it is blocked or trimmed.',
+    ];
+  }
+  if (/card|cvv/.test(label)) {
+    return [
+      `Open the tested checkout page: ${pageUrl}`,
+      'Locate the payment field being validated.',
+      'Enter valid numeric data for the expected length.',
+      'Enter characters or over-length data and confirm the field enforces the payment rule.',
+    ];
+  }
+  if (/copyright/.test(label)) {
+    return [
+      `Open the tested page: ${pageUrl}`,
+      'Inspect the footer and page content area.',
+      'Confirm copyright text, copyright symbol, or all-rights-reserved wording is present.',
+    ];
+  }
+  if (/layout|screen|padding|image/.test(label)) {
+    return [
+      `Open the tested page at the automation viewport: ${pageUrl}`,
+      'Inspect visible text blocks, images, and layout containers.',
+      'Confirm content fits within 100 percent screen width without horizontal overflow.',
+    ];
+  }
+  if (/gemini|grammar|spelling/.test(label)) {
+    return [
+      `Open the tested page: ${pageUrl}`,
+      'Collect visible page copy for LLM-assisted content review.',
+      'Check grammar, spelling, and obvious wording issues for manager/developer review.',
+    ];
+  }
+  return [
+    `Open the tested page: ${pageUrl}`,
+    'Locate the relevant UI element or page section.',
+    'Run the automated functional assertion.',
+    'Compare the observed behavior with the expected QA rule.',
+  ];
+}
+
+function functionalCheckDescription(check) {
+  const status = String(check.status || '').toUpperCase();
+  const detail = escapeHtml(check.detail || 'No runner detail was returned.');
+  if (status === 'PASS') {
+    return `The check passed. The observed behavior satisfies the expected QA rule. Evidence: ${detail}`;
+  }
+  if (status === 'FAIL') {
+    return `The check failed and should be reviewed by development. Expected behavior was not fully met. Evidence: ${detail}`;
+  }
+  return `The check needs manual review. The automation could not make a final pass/fail decision. Evidence: ${detail}`;
+}
+
 function buildHtmlReport(report) {
   const hasResults = Array.isArray(report.results) && report.results.length > 0;
   const overallResult = report.failed_orders > 0 ? 'FAIL' : 'PASS';
+  const orderPassRate = report.total_rows ? Math.round((report.placed_orders / report.total_rows) * 100) : 0;
   const visibleSecurityPerformance = Array.isArray(report.securityPerformance)
     ? report.securityPerformance.filter((item) => String(item.status || '').trim().toUpperCase() !== 'SKIPPED')
     : [];
+  const securityPassCount = visibleSecurityPerformance.filter((item) => String(item.status || '').trim().toUpperCase() === 'PASS').length;
+  const securityFailCount = visibleSecurityPerformance.filter((item) => String(item.status || '').trim().toUpperCase() === 'FAIL').length;
+  const securityReviewCount = Math.max(visibleSecurityPerformance.length - securityPassCount - securityFailCount, 0);
+  const securityPassRate = visibleSecurityPerformance.length ? Math.round((securityPassCount / visibleSecurityPerformance.length) * 100) : 0;
+  const functionalChecks = Array.isArray(report.functionalChecks) ? report.functionalChecks : [];
+  const functionalPassCount = functionalChecks.filter((item) => String(item.status || '').trim().toUpperCase() === 'PASS').length;
+  const functionalFailCount = functionalChecks.filter((item) => String(item.status || '').trim().toUpperCase() === 'FAIL').length;
+  const functionalReviewCount = Math.max(functionalChecks.length - functionalPassCount - functionalFailCount, 0);
+  const functionalPassRate = functionalChecks.length ? Math.round((functionalPassCount / functionalChecks.length) * 100) : 0;
   const rowTable = report.results.map((item, index) => `
     <tr>
       <td>${index + 1}</td>
@@ -1589,18 +1729,37 @@ function buildHtmlReport(report) {
     const detailNote = detailText && !/^Mode=/i.test(detailText) && !/budget=\d+s/i.test(detailText)
       ? `<p class="security-detail">${escapeHtml(check.details)}</p>`
       : '';
-    const reportLinkHtml = check.source
-      ? `<p class="security-label">REPORT LINK</p><p class="security-link">${check.source}</p>`
-      : '';
+    const isHtmlOptCheck = /HTML\s*Optim/i.test(check.label || '');
+    const screenshotDivClass = isHtmlOptCheck ? 'security-screenshot security-screenshot-prominent' : 'security-screenshot';
     return `
       <div class="security-card">
         <p class="security-label">Check point</p>
         <p class="security-title">${escapeHtml(check.label || '-')}</p>
         ${showStatus ? `<p class="security-label">Status</p><p class="security-status">${formatCheckStatus(check.status)}</p>` : ''}
-        ${reportLinkHtml}
-        ${screenshotHtml ? `<p class="security-label">screen shot</p><div class="security-screenshot">${screenshotHtml}</div>` : ''}
+        ${screenshotHtml ? `<p class="security-label">screen shot</p><div class="${screenshotDivClass}">${screenshotHtml}</div>` : ''}
         ${detailNote}
       </div>
+    `;
+  }).join('');
+
+  const functionalRows = functionalChecks.map((check, index) => {
+    const status = String(check.status || 'REVIEW').trim().toUpperCase();
+    const screenshotSrc = check.screenshotReportPath ? escapeHtml(check.screenshotReportPath) : '';
+    const steps = functionalCheckSteps(check, report)
+      .map((step) => `<li>${escapeHtml(step)}</li>`)
+      .join('');
+    return `
+      <section class="functional-check-card">
+        <div class="functional-check-head">
+          <h3>${index + 1}. ${functionalCheckTitle(check)}</h3>
+          <span class="functional-status ${status === 'PASS' ? 'status-pass' : status === 'FAIL' ? 'status-fail' : 'status-review'}">${formatCheckStatus(status)}</span>
+        </div>
+        <p class="security-label">Test steps</p>
+        <ul class="step-list">${steps}</ul>
+        <p class="security-label">Test description</p>
+        <p>${functionalCheckDescription(check)}</p>
+        ${screenshotSrc ? `<div class="functional-screenshot"><img src="${screenshotSrc}" alt="${escapeHtml(check.label || 'functional check')} screenshot"></div>` : ''}
+      </section>
     `;
   }).join('');
 
@@ -1613,7 +1772,7 @@ function buildHtmlReport(report) {
   <style>
     body{font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#1f2937;margin:24px;line-height:1.45;background:#fff;}
     h1,h2,h3,h4{color:#0f172a;}
-    h1{font-size:26px;margin:0 0 6px;}
+    h1{font-size:28px;margin:0 0 6px;}
     h2{font-size:17px;margin:24px 0 10px;border-bottom:1px solid #d8dee9;padding-bottom:6px;}
     table{width:100%;border-collapse:collapse;margin:12px 0;font-size:12.5px;}
     th,td{border:1px solid #d8dee9;padding:8px;text-align:left;vertical-align:top;}
@@ -1623,29 +1782,46 @@ function buildHtmlReport(report) {
     .manual{color:#9a6700;font-weight:bold;}
     .section{margin-bottom:24px;}
     .meta{margin:6px 0;}
-    .cover{border:1px solid #d8dee9;border-left:5px solid #0f766e;border-radius:8px;padding:18px;margin-bottom:18px;}
+    .cover{border:1px solid #d8dee9;border-left:6px solid #0f766e;border-radius:8px;padding:18px;margin-bottom:18px;background:linear-gradient(90deg,#f8fffd,#fff);}
     .cover .meta{color:#667085;}
-    .summary-grid{display:flex;flex-wrap:wrap;gap:12px;margin:16px 0;}
-    .summary-card{background:#f8fafc;border:1px solid #d8dee9;border-radius:8px;padding:12px;min-width:140px;}
+    .summary-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:16px 0;}
+    .summary-card{background:#f8fafc;border:1px solid #d8dee9;border-radius:8px;padding:12px;min-width:0;}
     .summary-card span{display:block;color:#667085;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
     .summary-card strong{display:block;font-size:22px;color:#111827;}
+    .score-card{background:#0f766e;color:#fff;}
+    .score-card span,.score-card strong{color:#fff;}
+    .bar{height:10px;border-radius:999px;background:#edf2f7;overflow:hidden;min-width:90px;margin-bottom:4px;}
+    .bar span{display:block;height:100%;background:#0f766e;border-radius:999px;}
     .security-cards{display:flex;flex-wrap:wrap;gap:16px;margin-top:20px;}
-    .security-card{background:#fff;border:1px solid #ddd;border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,.08);padding:16px;width:calc(50% - 16px);box-sizing:border-box;}
+    .security-card{background:#fff;border:1px solid #ddd;border-radius:10px;box-shadow:0 3px 10px rgba(0,0,0,.06);padding:12px;width:100%;box-sizing:border-box;page-break-inside:avoid;}
     .security-label{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:#666;margin:8px 0 2px;}
     .security-title{font-size:1rem;font-weight:600;color:#222;margin:0;}
     .security-status{font-size:.9rem;margin:0;}
-    .security-link a{color:#0b63ff;font-weight:600;}
-    .security-screenshot{margin-top:8px;}
-    .security-screenshot img{max-width:360px;width:100%;height:auto;border:3px solid #ccc;padding:3px;border-radius:8px;box-sizing:border-box;}
+    .security-screenshot{margin-top:12px;}
+    .security-screenshot img{display:block;max-width:100%;max-height:720px;width:auto;height:auto;object-fit:contain;border:2px solid #cbd5e1;padding:4px;border-radius:6px;box-sizing:border-box;margin:0 auto;}
+    .security-screenshot-prominent{margin:16px 0;padding:12px;background:#f0f9ff;border-radius:8px;}
+    .security-screenshot-prominent img{max-height:900px;border:3px solid #0284c7;padding:8px;box-shadow:0 4px 12px rgba(2,132,199,.15);}
     .security-detail{font-size:.85rem;color:#555;margin-top:12px;}
     .security-placeholder{font-size:.85rem;color:#999;margin:0;}
+    .functional-screenshot{width:min(100%,780px);margin:8px auto 14px;padding:6px;border:1px solid #d8dee9;border-radius:8px;text-align:center;page-break-inside:avoid;}
+    .functional-screenshot img{display:inline-block;max-width:100%;max-height:360px;width:auto;height:auto;object-fit:contain;}
+    .functional-check-card{border:1px solid #d8dee9;border-radius:10px;background:#fff;padding:14px;margin:12px 0;page-break-inside:avoid;}
+    .functional-check-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;border-bottom:1px solid #eef2f7;padding-bottom:8px;margin-bottom:10px;}
+    .functional-check-head h3{font-size:15px;margin:0;}
+    .functional-status{white-space:nowrap;font-size:12px;font-weight:800;}
+    .status-pass .pass,.status-fail .fail,.status-review .manual{border-radius:999px;padding:4px 8px;}
+    .status-pass .pass{background:#ecfdf3;}
+    .status-fail .fail{background:#fff1f0;}
+    .status-review .manual{background:#fffaeb;}
     .issue-card{border:1px solid #fecdca;background:#fff7f6;border-radius:10px;padding:14px;margin:12px 0;}
     .issue-card h3{font-size:1rem;color:#b42318;margin:0 0 8px;}
     .issue-card h3 span{display:block;font-size:.78rem;color:#666;margin-top:3px;}
     .issue-card p{margin:6px 0;}
     .step-list{margin:6px 0 8px 18px;padding:0;}
     .step-list li{margin:4px 0;line-height:1.45;}
-    @media (max-width:768px){.security-card{width:100%;}}
+    .footer{margin-top:24px;color:#667085;font-size:11px;text-align:center;border-top:1px solid #d8dee9;padding-top:10px;}
+    @media print{.summary-grid{grid-template-columns:repeat(5,1fr);} .security-card{break-inside:avoid;} .security-screenshot{max-height:380px;overflow:hidden;}}
+    @media (max-width:768px){.security-card{width:100%;}.summary-grid{grid-template-columns:1fr;}}
   </style>
 </head>
 <body>
@@ -1661,12 +1837,46 @@ function buildHtmlReport(report) {
   <section class="section">
     <h2>Executive Summary</h2>
     <div class="summary-grid">
+      <div class="summary-card score-card"><span>Order QA Score</span><strong>${orderPassRate}%</strong></div>
       <div class="summary-card"><span>Overall Result</span><strong class="${overallResult === 'PASS' ? 'pass' : 'fail'}">${overallResult}</strong></div>
       <div class="summary-card"><span>Total Rows</span><strong>${report.total_rows}</strong></div>
       <div class="summary-card"><span>Placed Orders</span><strong>${report.placed_orders}</strong></div>
       <div class="summary-card"><span>Failed Orders</span><strong>${report.failed_orders}</strong></div>
     </div>
-    <p>${report.failed_orders > 0 ? `${report.failed_orders} order-flow issue(s) require review before production release.` : 'All submitted order rows completed successfully in this automation run.'}</p>
+    <p>${report.failed_orders > 0 ? `${report.failed_orders} order-flow issue(s) require review before production release. The order QA score is ${orderPassRate}%.` : `All submitted order rows completed successfully. The order QA score is ${orderPassRate}%.`}</p>
+  </section>
+
+  <section class="section">
+    <h2>QA Coverage Graph</h2>
+    <table>
+      <thead><tr><th>Area</th><th>Total</th><th>Pass</th><th>Fail</th><th>Review</th><th>Pass Rate</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Order Flow</td>
+          <td>${report.total_rows}</td>
+          <td><span class="pass">${report.placed_orders}</span></td>
+          <td><span class="fail">${report.failed_orders}</span></td>
+          <td>0</td>
+          <td><div class="bar"><span style="width:${orderPassRate}%"></span></div><strong>${orderPassRate}%</strong></td>
+        </tr>
+        <tr>
+          <td>Security and Performance</td>
+          <td>${visibleSecurityPerformance.length}</td>
+          <td><span class="pass">${securityPassCount}</span></td>
+          <td><span class="fail">${securityFailCount}</span></td>
+          <td>${securityReviewCount}</td>
+          <td><div class="bar"><span style="width:${securityPassRate}%"></span></div><strong>${securityPassRate}%</strong></td>
+        </tr>
+        <tr>
+          <td>Functional QA</td>
+          <td>${functionalChecks.length}</td>
+          <td><span class="pass">${functionalPassCount}</span></td>
+          <td><span class="fail">${functionalFailCount}</span></td>
+          <td>${functionalReviewCount}</td>
+          <td><div class="bar"><span style="width:${functionalPassRate}%"></span></div><strong>${functionalPassRate}%</strong></td>
+        </tr>
+      </tbody>
+    </table>
   </section>
 
   <section class="section">
@@ -1731,11 +1941,17 @@ function buildHtmlReport(report) {
 
   <section class="section">
     <h2>Security and Performance</h2>
-    <p><strong>Summary:</strong> Total Rows: ${report.total_rows} | Placed Orders: ${report.placed_orders} | Failed Orders: ${report.failed_orders}</p>
+    <p><strong>Summary:</strong> ${securityPassCount} passed, ${securityFailCount} failed, ${securityReviewCount} need review.</p>
     <div class="security-cards">
       ${securityCards || '<p class="security-placeholder">No security/performance checks available.</p>'}
     </div>
   </section>
+  <section class="section">
+    <h2>Functional QA Checks</h2>
+    <p><strong>Summary:</strong> ${functionalPassCount} passed, ${functionalFailCount} failed, ${functionalReviewCount} need review. These checks run after the security/performance section and cover form validation, footer copyright, layout width, and optional Gemini content review.</p>
+    ${functionalRows || '<p>No functional QA checks were returned.</p>'}
+  </section>
+  <div class="footer">QA Testing Portal report generated for management review.</div>
 </body>
 </html>`;
 }
@@ -1844,9 +2060,17 @@ async function runSingleOrder(page, baseUrl, locators, rowData, screenshotDir, r
   const cardMeta = classifyCard(rowData.cardNumber);
   const screenshotFileName = `row_${String(rowIndex + 1).padStart(3, '0')}_${rowData.cardNumber.slice(-4)}.png`;
   const screenshotPath = path.join(screenshotDir, screenshotFileName);
+  const visitedPages = [];
+  const addVisitedPage = (label) => {
+    const url = normalizeQaUrl(page.url());
+    if (url && !visitedPages.some((item) => item.url === url)) {
+      visitedPages.push({ label, url });
+    }
+  };
 
   await throwIfStopRequested(stopSignalPath, logPath);
   await page.goto(baseUrl, { waitUntil: 'domcontentloaded', timeout: 45000 });
+  addVisitedPage('Landing Page');
   await throwIfStopRequested(stopSignalPath, logPath);
   await page.fill(locators.prospect.firstName, rowData.firstName);
   await page.fill(locators.prospect.lastName, rowData.lastName);
@@ -1863,6 +2087,7 @@ async function runSingleOrder(page, baseUrl, locators, rowData, screenshotDir, r
   await clickButtonSafely(page, continueButton);
 
   await page.waitForLoadState('domcontentloaded');
+  addVisitedPage('Checkout Page');
   await waitForCheckoutReady(page, locators, 30000);
   await dismissCheckoutPopup(page, locators, screenshotPath, 3000).catch(() => {});
   await throwIfStopRequested(stopSignalPath, logPath);
@@ -1870,6 +2095,7 @@ async function runSingleOrder(page, baseUrl, locators, rowData, screenshotDir, r
   const cardEntryState = await enterCardNumberWithPopupHandling(page, locators, rowData.cardNumber, screenshotPath);
   const popupTimeoutMs = Number(locators.popups.noThanksTimeoutMs || 15000);
   if (cardMeta.status === 'decline' && cardEntryState.popupAppearedAfterCard) {
+    addVisitedPage('Checkout Page');
     return {
       email: rowData.email,
       orderId: '',
@@ -1879,6 +2105,7 @@ async function runSingleOrder(page, baseUrl, locators, rowData, screenshotDir, r
       cardLast4: rowData.cardNumber.slice(-4),
       screenshotFileName,
       expectation: cardMeta.status,
+      visitedPages,
     };
   }
 
@@ -1894,6 +2121,7 @@ async function runSingleOrder(page, baseUrl, locators, rowData, screenshotDir, r
   await page.click(locators.checkout.submitButton);
 
   await page.waitForLoadState('domcontentloaded');
+  addVisitedPage('Post Submit Page');
   const popupAppearedAfterSubmit = await waitForAnyVisibleSelector(page, getPopupSelectors(locators).popupSelectors, 3000);
   if (popupAppearedAfterSubmit) {
     await takeScreenshot(page, screenshotPath).catch(() => {});
@@ -1909,8 +2137,10 @@ async function runSingleOrder(page, baseUrl, locators, rowData, screenshotDir, r
     await page.waitForSelector(locators.result.thankYouIndicator, { timeout: timeoutMs });
     status = 'PLACED';
     message = 'Order placed successfully.';
+    addVisitedPage('Confirmation Page');
   } catch (error) {
     const currentUrl = page.url();
+    addVisitedPage('Final Order State Page');
     if (isThankYouUrl(currentUrl) || /[?&]order_id=/i.test(currentUrl)) {
       status = 'PLACED';
       message = 'Popup was skipped; order confirmed from thank-you URL.';
@@ -1938,6 +2168,7 @@ async function runSingleOrder(page, baseUrl, locators, rowData, screenshotDir, r
     cardLast4: rowData.cardNumber.slice(-4),
     screenshotFileName,
     expectation: cardMeta.status,
+    visitedPages,
   };
 }
 
@@ -1978,6 +2209,7 @@ async function main() {
         cardLast4: '',
         screenshotFileName: '',
         expectation: 'unknown',
+        visitedPages: [{ label: 'Landing Page', url: normalizeQaUrl(config.baseUrl) }],
       });
       continue;
     }
@@ -2002,6 +2234,7 @@ async function main() {
         cardLast4: rowData.cardNumber ? rowData.cardNumber.slice(-4) : '',
         screenshotFileName: '',
         expectation: 'unknown',
+        visitedPages: [{ label: 'Landing Page', url: normalizeQaUrl(config.baseUrl) }],
       });
       continue;
     }
@@ -2045,6 +2278,9 @@ async function main() {
         cardLast4: rawCard.slice(-4),
         screenshotFileName: session ? fallbackFile : '',
         expectation: classifyCard(rawCard).status,
+        visitedPages: session
+          ? [{ label: 'Last Reached Order Flow Page', url: normalizeQaUrl(session.page.url()) }].filter((item) => item.url)
+          : [{ label: 'Landing Page', url: normalizeQaUrl(config.baseUrl) }],
       };
 
       results.push(failureResult);
@@ -2071,6 +2307,9 @@ async function main() {
       source: '',
     },
   ]));
+  await throwIfStopRequested(config.stopSignalPath, logPath);
+  const functionalPageEntries = buildFunctionalPageEntries(config.baseUrl, results);
+  const functionalChecks = await collectFunctionalQaChecks(config.baseUrl, reportDir, functionalPageEntries, logPath);
   await fs.writeFile(reportHtmlPath, buildHtmlReport({
     id: reportId,
     offer_name: config.offerName || '',
@@ -2082,6 +2321,8 @@ async function main() {
     failed_orders: results.filter((item) => item.status !== 'PLACED').length,
     report_dir: reportDir,
     securityPerformance,
+    functionalChecks,
+    functionalPageEntries,
     results: results.map((item) => ({
       ...item,
       result: item.status === 'PLACED' ? 'PASS' : 'FAIL',
@@ -2114,6 +2355,8 @@ async function main() {
     report_format: reportArtifact.generated ? 'pdf' : 'html',
     report_error: reportArtifact.error,
     securityPerformance,
+    functionalChecks,
+    functionalPageEntries,
     view_url: reportPublicPath,
     download_url: reportPublicPath,
     results: results.map((item) => ({
